@@ -1,0 +1,306 @@
+---
+layout: post
+title: "git学习"
+date: 2015-02-1
+comments: true
+categories: git
+tags: [git]
+published: ture
+keywords: git
+categories: git学习
+---
+#####1、git学习
+
+{% highlight ruby %} 
+cd  gitDemo
+查看是否有git  ： git remote -v
+git init 
+git add . 
+git commit -m 'xxxxx'
+git remote add origin https://github.com/lc5491137/1111.git
+git push -u origin master
+{% endhighlight %}
+
+#####2、首先创建一个远程仓库，得到远程仓库地址
+
+{% highlight ruby %} 
+进入本地目录 git init初始化git
+git add .添加当前目录下的所有文件和文件夹
+添加提交信息git commit -m "first commit"，这时候并未真正的提交到服务器
+git remote add origin https://github.com/lc5491137/1111.git添加远端仓库，origin是默认仓库的名称。
+提交到远端仓库master分支git push -u origin master，-u表示以后提交都是默认到origin的master分支上
+之后提交顺序为
+{% endhighlight %}
+
+#####3、几点说明
+{% highlight ruby %} 
+-u表示以后提交都是默认到origin的master分支上
+origin: 远程仓库的别名
+master: 主分支
+
+git add .
+git commit -m 'xxxxx'
+git push
+{% endhighlight %}
+
+   
+    添加电脑上的 公钥
+查看是否存在公钥：ls -al ~/.ssh
+生成密钥：ssh-keygen -t rsa -C "your_email@example.com"，一路回车键
+eval "$(ssh-agent -s)" ssh-add ~/.ssh/id_rsa
+复制公钥：pbcopy < ~/.ssh/id_rsa.pub
+
+**： pbcopy < ~/.ssh/id_rsa.pub 复制 公钥  复制完了然后再 https://coding.net/user/setting/keys 添加公密
+
+
+
+windows上补充：
+参考地址 http://blog.csdn.net/zhandoushi1982/article/details/8464548
+
+（7）git config：查询和修改配置。当使用git时反馈*** Please tell me who you are，说明个人账户没有配置。git的配置文件；一共有三个：
+
+            A，/etc/gitconfig: 所有用户普遍适用的、系统的，git config --system选项
+            B，~/.gitconfig： 只适用该用户， git config --global选项
+            C，.git/config当前项目.git目录中，只适用当前项目， .git/config 
+            每一层都覆盖上一层，也就是优先级  .gitconfig  >  ~/.gitconfig  >  /etc/gitconfig。配置内容：A，用户信息：包括个人用户名称和电子邮件名称；B，文本编辑器：设置在需要打开文本编辑器来输入某些信息时默认编辑器，例如vi、 vim、 emacs等；C，差异分析工具：在解决合并冲突时使用哪种差异分析工具。比如vimdiff；
+
+[cpp] view plaincopy在CODE上查看代码片派生到我的代码片
+{% highlight ruby %} 
+git config --global user.name "个人用户名称"  
+git config --global user.email 电子邮件  
+git config --global core.editor vim  
+git config --global merge.tool vimdiff  
+{% endhighlight %}
+
+git继续学习    2015年01月29日09:20:20
+
+git查看历史版本信息 ：git  reflog
+恢复某一版本
+git reset --hard xxxxx    xxxxx是版本号
+
+git继续学习    2015年02月01日10:02:42
+参考demo地址: http://www.netfoucs.com/article/han1202012/64551.html
+
+git rm --cached 删除某一个文件
+
+
+分享git的几个小技巧，后面会根据使用补充。目前包括git撤销本地修改、git回退到前n个版本、git多用户提交冲突解决、git 命令简化。欢迎大家补充^_*
+
+#####1、git撤销本地修改
+
+{% highlight ruby %} 
+git reset --hard origin/master
+git pull
+{% endhighlight %}
+
+#####2、git回退到前n个版本
+
+如下为向前回退3个版本，git reset –hard HEAD~3
+
+#####3、git多用户提交冲突一
+场景：用户UserA修改了文件File1，用户UserB也修改了文件File1并成功merge到了服务器上，而UserA和UserB改动了同一个代码块，当UserA拉取代码时git无法merge此改动，就会出现如下错误提示，
+error: Your local changes to the following files would be overwritten by merge: cn/trinea/appsearch/MainActivity.java
+Please, commit your changes or stash them before you can merge.
+这时
+
+######(1) 如果希望保存本地改动并拉下最新服务器代码，手动merge，使用命令如下：
+
+{% highlight ruby %} 
+git stash
+git pull
+git stash pop
+git diff -w cn/trinea/appsearch/MainActivity.java
+{% endhighlight %}
+
+其中git stash表示备份当前工作区内容到git栈中，并使当前工作区内容与上次提交时一致，然后git pull拉取最新代码，git stash pop表示从Git栈中读取最近一次保存的内容，恢复工作区的相关内容，最后git diff表示手动merge你之前冲突的文件
+
+######(2) 如果希望服务器上版本完全覆盖本地修改，使用如下命令回退并更新：
+ {% highlight ruby %} 
+git reset --hard
+git pull
+{% endhighlight %}
+
+
+#####4、git多用户提交冲突二
+
+场景：用户UserA修改了文件File1，用户UserB也修改了文件File1并成功merge到了服务器上，而UserA和UserB改动了同一个代码块，当UserA拉取代码时git无法merge此改动，就会出现如下错误提示，
+error: Your local changes to the following files would be overwritten by merge: cn/trinea/appsearch/MainActivity.java
+Please, commit your changes or stash them before you can merge.
+这时
+
+######(1) 如果希望保存本地改动并拉下最新服务器代码，手动merge，使用命令如下：
+ {% highlight ruby %} 
+git stash
+git pull
+git stash pop
+git diff -w cn/trinea/appsearch/MainActivity.java
+
+{% endhighlight %}
+
+其中git stash表示备份当前工作区内容到git栈中，并使当前工作区内容与上次提交时一致，然后git pull拉取最新代码，git stash pop表示从Git栈中读取最近一次保存的内容，恢复工作区的相关内容，最后git diff表示手动merge你之前冲突的文件
+
+######(2) 如果希望服务器上版本完全覆盖本地修改，使用如下命令回退并更新：
+ {% highlight ruby %} 
+git reset --hard
+git pull
+
+{% endhighlight %}
+
+#####4、git多用户提交冲突二
+
+场景：用户UserA提交了change A，没有merge，之后用户UserB提交了change B，merge成功。当merge change A时出错，会提示，
+The change could not be merged due to a path conflict.
+Please rebase the change locally and upload the rebased commit for review.
+
+大多数人的解决方式都是拷贝改动代码，并重拉最新代码Beyond Compare，重新提交。其实几条命令就可以搞定，gerrit上先abandon原来的提交，后执行如下命令：
+ {% highlight ruby %} 
+git reset --hard HEAD~2
+git pull
+git fetch ssh://xxxx refs/changes/46/28146/1 && git cherry-pick FETCH_HEAD
+git push gerrit:xxxxxx HEAD:refs/for/xxxxxx
+{% endhighlight %}
+
+其中git reset –hard HEAD~2表示本地代码后退两级，如果有问题可以多后退几次
+
+git pull表示拉最新代码
+git fetch 表示获取之前没merge成功的改动到本地，后面跟的具体地址为gerrit上该change review页面选择cherry-pick、ssh后的地址，如下图红线标识
+
+git push 跟平时push一样
+
+#####5、git命令简化
+
+######(1) 简化git push命令
+
+通常git push命令为git push gerrit:aaa HEAD:refs/for/bbb，其实可简化为git push。
+编辑git库下的.git/config文件，在[remote "remoteName"]下添加两行
+ {% highlight ruby %} 
+pushurl=gerrit:aaa.git
+push=HEAD:refs/for/bbb
+
+{% endhighlight %}
+
+以后提交只需要用git push即可。
+
+######(2) 简化git add *;git commit -a;git push命令，一步完成添加、commit、push
+
+第(1)步配好后，你还可以将命令git add *;git commit -a;git push添加别名到系统path中，如下操作：
+vim ~/.bash_profile，文件最后添加
+
+ {% highlight ruby %} 
+/# add by trinea.cn for git simplify
+alias gpush='git add *;git commit -a;git push'
+
+{% endhighlight %}
+
+source ~/.bash_profile
+
+这样以后只需要gpush即可完成添加、commit、push，当然你也可以取其他的别名如gp、gitpush、gitp。
+
+## 001、新添加内容
+
+######  1、git安装的配置
+
+ {% highlight ruby %} 
+
+git config --global user.name "your name"
+git config --global user.email "your email"
+
+{% endhighlight %}
+
+###### 2、初始化git仓库
+
+ {% highlight ruby %} 
+
+git init
+
+{% endhighlight %}
+
+###### 3、添加文件到git仓库
+
+ {% highlight ruby %} 
+
+git add file1  //添加file1
+git .          //添加当前目录所有文件
+git commit -m "add file1"  //-m 后面接的是提交代码的备注
+
+{% endhighlight %}
+
+###### 4、查看仓库当前状态
+
+ {% highlight ruby %} 
+
+git status 
+
+{% endhighlight %}
+
+###### 5、查看某个修改的内容
+
+ {% highlight ruby %} 
+
+git diff <file>  
+
+{% endhighlight %}
+
+###### 6、版本切换
+
+ {% highlight ruby %} 
+
+git reset --hard HEAD^  //回退到上个版本
+git reset --hard commit_id  //切换到某个特定的版本
+git reflog    //查看历史命令
+
+{% endhighlight %}
+
+###### 7、撤销修改
+
+ {% highlight ruby %} 
+
+git checkout -- <file>  //撤销工作区的修改
+git reset HEAD <file>   //将暂存区的修改退回到工作区
+
+{% endhighlight %}
+
+###### 8、删除文件
+
+ {% highlight ruby %} 
+
+git rm <file>
+git commit -m "remove file"
+
+{% endhighlight %}
+
+###### 9、分支使用
+
+ {% highlight ruby %} 
+
+git branch  //查看分支
+git branch <branch_name>   //创建分支
+git checkout <branch_name>  //切换分支
+git merge <branch_name>   //合并某分支到当前分支
+git branch -d <branch_name>  //删除分支
+git merge --no-ff -m "merge" <branch_name>  //这样合并分支时不会丢掉分支信息
+
+{% endhighlight %}
+
+
+###### 10、存储工作现场
+
+ {% highlight ruby %} 
+
+git stash  //存储工作现场
+git stash pop  //恢复工作现场
+
+{% endhighlight %}
+
+
+###### 11、向远程库推送修改
+
+ {% highlight ruby %} 
+
+git pull  //合并更新
+git push origin <branch_name>  //推送修改到远程库
+
+{% endhighlight %}
+
+
+ 
