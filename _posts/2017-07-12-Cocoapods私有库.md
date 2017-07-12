@@ -21,10 +21,6 @@ description: Cocoapods创建私有库
 ```
  pod lib create ModelProtocol
 ```
->**如果需要swif3则需要在终端中执行**
-```
-echo 3.0 > .swift-version
-```
 2. 模块验证：
  ```
  pod lib lint --verbose
@@ -39,7 +35,9 @@ echo 3.0 > .swift-version
 update code, 然后打tag ，推送tag ，记得修改ModelProtocol.podspec文件对于的tag 版本
 ```
 #### 4.私有库中引用私有库
+
 > [参考资料](https://aotu.io/notes/2016/01/27/how-to-make-cocoapods/)
+
 1.   模块验证:
 
 -  本地调试验证模块
