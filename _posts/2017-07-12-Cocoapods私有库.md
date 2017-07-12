@@ -9,7 +9,9 @@ published: ture
 keywords: Cocoapods,私有库
 description: Cocoapods创建私有库
 ---
+
 > 该文章主要简单记录我在模块化过程中使用Cocoapods的过程中遇到的一些问题已经一些简单技巧吧
+
 #### 1.添加私有仓储:
 ```
  pod repo add CYSpecs https://git.coding.net/SeongBrave/CYSpecs.git
