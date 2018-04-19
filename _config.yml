@@ -17,7 +17,8 @@ blog_button:
     description: Visit blog
 
 # Navigation buttons in the front page.
-    # - {title: Another Button, description: A button, url: 'http://example.com'}
+nav:
+    - {title: github, description: github, url: 'https://github.com/SeongBrave'}
 
 # Pagination
 gems: [jekyll-paginate]
