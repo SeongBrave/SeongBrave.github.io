@@ -17,8 +17,6 @@ blog_button:
     description: Visit blog
 
 # Navigation buttons in the front page.
-nav:
-    - {title: 关于, description: My Projects, url: 'http://seongbrave.github.io/about.html'}
     # - {title: Another Button, description: A button, url: 'http://example.com'}
 
 # Pagination
