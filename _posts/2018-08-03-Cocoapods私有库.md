@@ -24,6 +24,12 @@ pod repo add JDJRSpecs http://jcode.cbpmgt.com/git/JDJRSpecs.git
  pod lib create JDJR_Utils
 ```
 
+#### 1.1 只创建一个 podspecs
+
+```ruby
+pod spec create Gandalf_Lib.podspec
+```
+
 ### 2. 模块验证
 
 - 本地模块验证
