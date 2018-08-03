@@ -92,7 +92,7 @@ pod package JDJR_Utils.podspec  --force --library
 
   参照友盟的如:
 
-  ![](../assets/images/20180803/001.png)
+  ![](/images/20180803/001.png)
 
 - 第二步 然后压缩文件夹 为`JDJR_Gandalf.zip`包，并在直接上传到`JBox`上(暂时不行，我测试时上传到骑牛空间的)，最终得到一个地址:`http://o82jar85w.bkt.clouddn.com/JDJR_Gandalf.zip`
 
