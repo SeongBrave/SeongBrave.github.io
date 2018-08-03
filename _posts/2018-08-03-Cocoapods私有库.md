@@ -261,3 +261,4 @@ pod playgrounds SnapKit
 3.  [私有库管理和模块化管理](http://www.pluto-y.com/cocoapod-private-pods-and-module-manager/)
 4.  [pod 导入静态资源](http://blog.startry.com/2016/03/17/the-trap-of-image-resource/)
 5.  [官方资料](https://guides.cocoapods.org/syntax/podspec.html)
+6.  [cocoaPods 进行 SDK 二次包装(cocoapods-packager 完成 framework 静态库打包,避免第三方库冲突)](https://blog.csdn.net/iOSTianNan/article/details/81007691)
