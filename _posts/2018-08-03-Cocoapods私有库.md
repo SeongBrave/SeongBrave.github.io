@@ -254,6 +254,10 @@ pod playgrounds SnapKit
 
 ### 2. cocoapods-package
 
+#### 1. 头文件导入问题
+
+> [参考资料](https://www.jianshu.com/p/544df88b6a1e) ![](/images/20180803/002.png)
+
 ## 参考资料
 
 1.  [创建私有库](http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/)
@@ -262,3 +266,4 @@ pod playgrounds SnapKit
 4.  [pod 导入静态资源](http://blog.startry.com/2016/03/17/the-trap-of-image-resource/)
 5.  [官方资料](https://guides.cocoapods.org/syntax/podspec.html)
 6.  [cocoaPods 进行 SDK 二次包装(cocoapods-packager 完成 framework 静态库打包,避免第三方库冲突)](https://blog.csdn.net/iOSTianNan/article/details/81007691)
+7.  [CocoaPods 动/静态库混用封装组件化](https://www.jianshu.com/p/544df88b6a1e) 推荐:<font color=red>**\*\*\***</font>
