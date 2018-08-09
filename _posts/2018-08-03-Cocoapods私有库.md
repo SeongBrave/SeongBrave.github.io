@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "cocoapods私有库"
+title: 'cocoapods私有库'
 date: 2018-08-03
 comments: true
 categories: cocoapods
@@ -48,6 +48,20 @@ pod spec lint --sources='http://jcode.cbpmgt.com/git/JDJRSpecs.git,https://githu
 
 ```ruby
 pod repo push JDJRSpecs JDJR_Utils.podspec --sources='http://jcode.cbpmgt.com/git/JDJRSpecs.git,https://github.com/CocoaPods/Specs'
+```
+
+#### 3.1 或者提交到公共仓储
+
+3.1.1 首先需要注册
+
+```shell
+pod trunk register seongbrave@sina.com
+```
+
+3.1.2 提交注册到公共仓储
+
+```shell
+pod trunk push DXRiskWithIDFA_Lib.podspec --allow-warnings
 ```
 
 ### 3. 打包成 Framework 或者 Library
