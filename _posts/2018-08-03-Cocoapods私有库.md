@@ -13,7 +13,7 @@ description: cocoapods私有库以及framework的打包
 ## 1. 添加私有仓储
 
 ```ruby
-pod repo add JDJRSpecs http://jcode.cbpmgt.com/git/JDJRSpecs.git
+pod repo add CYSpecs https://git.coding.net/SeongBrave/CYSpecs.git
 ```
 
 ## 2.模块开发
@@ -21,13 +21,13 @@ pod repo add JDJRSpecs http://jcode.cbpmgt.com/git/JDJRSpecs.git
 ### 1. 模块初始化
 
 ```ruby
- pod lib create JDJR_Utils
+ pod lib create UtilCore
 ```
 
 #### 1.1 只创建一个 podspecs
 
 ```ruby
-pod spec create Gandalf_Lib.podspec
+pod spec create UtilCore_Lib.podspec
 ```
 
 ### 2. 模块验证
@@ -35,19 +35,19 @@ pod spec create Gandalf_Lib.podspec
 - 本地模块验证
 
 ```ruby
- pod lib lint --allow-warnings --sources='http://jcode.cbpmgt.com/git/JDJRSpecs.git,https://github.com/CocoaPods/Specs'
+ pod lib lint --allow-warnings --sources='https://git.coding.net/SeongBrave/CYSpecs.git,https://github.com/CocoaPods/Specs'
 ```
 
 - 确定没问题了可以先打 tag 验证:
 
 ```ruby
-pod spec lint --sources='http://jcode.cbpmgt.com/git/JDJRSpecs.git,https://github.com/CocoaPods/Specs'
+pod spec lint --sources='https://git.coding.net/SeongBrave/CYSpecs.git,https://github.com/CocoaPods/Specs'
 ```
 
 ### 3. 提交模块到私有仓储
 
 ```ruby
-pod repo push JDJRSpecs JDJR_Utils.podspec --sources='http://jcode.cbpmgt.com/git/JDJRSpecs.git,https://github.com/CocoaPods/Specs'
+pod repo push CYSpecs UtilCore.podspec --sources='https://git.coding.net/SeongBrave/CYSpecs.git,https://github.com/CocoaPods/Specs'
 ```
 
 #### 3.1 或者提交到公共仓储
@@ -61,23 +61,23 @@ pod trunk register seongbrave@sina.com
 3.1.2 提交注册到公共仓储
 
 ```shell
-pod trunk push DXRiskWithIDFA_Lib.podspec --allow-warnings
+pod trunk push UtilCore_Lib.podspec --allow-warnings
 ```
 
 ### 3. 打包成 Framework 或者 Library
 
-> 可以使用 pod package 命令打包成 Framework 或者 Library ，默认是头文件都会打包，如果需要指定公开的头文件可以在 `JDJR_Utils.podspec`文件中配置`s.public_header_files`
+> 可以使用 pod package 命令打包成 Framework 或者 Library ，默认是头文件都会打包，如果需要指定公开的头文件可以在 `UtilCore.podspec`文件中配置`s.public_header_files`
 
 ### 1. 默认打包成 Framework
 
 ```ruby
-pod package JDJR_Utils.podspec  --force
+pod package UtilCore.podspec  --force
 ```
 
 ### 2. 加上`--library`即可打包成.a 文件
 
 ```ruby
-pod package JDJR_Utils.podspec  --force --library
+pod package UtilCore.podspec  --force --library
 ```
 
 ### 3. 指定私有仓储
@@ -85,43 +85,43 @@ pod package JDJR_Utils.podspec  --force --library
 > 如果项目中使用了私有库，需要指定对应的私有仓储,需要加上 `--spec-sources`指定私有仓储
 
 ```ruby
- pod package JDJR_Gandalf.podspec  --force  --spec-sources=http://jcode.cbpmgt.com/git/JDJRSpecs.git,https://github.com/CocoaPods/Specs.git
+ pod package UtilCore.podspec  --force  --spec-sources=https://git.coding.net/SeongBrave/CYSpecs.git,https://github.com/CocoaPods/Specs.git
 ```
 
 #### 3.1.私有仓储依赖 **Framework**
 
-在`JDJR_Utils.podspec`文件中添加一下类似代码即可依赖 Framework
+在`UtilCore.podspec`文件中添加一下类似代码即可依赖 Framework
 
 ```ruby
-  s.vendored_frameworks = ['JDJR_HardwareInfo/vendored_frameworks/JDJR_Utils.framework']
-  spec.resource_bundles = {'Resources' => 'JDJR_HardwareInfo/vendored_frameworks/JDJR_Utils.framework/Resources/JDJR_Utils.bundle'}
+  s.vendored_frameworks = ['UtilCore/vendored_frameworks/UtilCore.framework']
+  spec.resource_bundles = {'Resources' => 'UtilCore/vendored_frameworks/UtilCore.framework/Resources/UtilCore.bundle'}
 ```
 
 ### 4. 打包完后使用注意
 
 #### 1. 提供给外部人员使用 Framework
 
-> 可以将打包成的 Framework 放大**JBox**上(理论应该可以，但是我测试了貌似不行不过我将 Framework 压缩然后放到骑牛上就完全没有问题),以下以设备指纹项目`JDJR_Gandalf`为例说明:
+> 可以将打包成的 Framework 放大**JBox**上(理论应该可以，但是我测试了貌似不行不过我将 Framework 压缩然后放到骑牛上就完全没有问题),以下以设备指纹项目`UtilCore`为例说明:
 
-- 第一步取得上面生成打包好的 **JDJR_Gandalf.Framework** 将其放到桌面或者其它地方已经创建好的`JDJR_Gandalf`文件夹中,文件夹中应该包含的内容包括
+- 第一步取得上面生成打包好的 **UtilCore.Framework** 将其放到桌面或者其它地方已经创建好的`UtilCore`文件夹中,文件夹中应该包含的内容包括
 
-  - 最终要的 **JDJR_Gandalf.Framework** 文件库
+  - 最终要的 **UtilCore.Framework** 文件库
   - 一定要包含的 **Doc** 文件，帮助用户使用的
-  - 还要包含的就是版本更新记录`JDJR_Gandalf_Sdk_ReleaseNotes`
+  - 还要包含的就是版本更新记录`UtilCore_Sdk_ReleaseNotes`
   - 当然最好再包含一份 **Demo**项目就完美了
 
   参照友盟的如:
 
   ![](/images/20180803/001.png)
 
-- 第二步 然后压缩文件夹 为`JDJR_Gandalf.zip`包，并在直接上传到`JBox`上(暂时不行，我测试时上传到骑牛空间的)，最终得到一个地址:`http://o82jar85w.bkt.clouddn.com/JDJR_Gandalf.zip`
+- 第二步 然后压缩文件夹 为`UtilCore.zip`包，并在直接上传到骑牛空间，最终得到一个地址:`http://o82jar85w.bkt.clouddn.com/UtilCore.zip`
 
-- 第三步 生成对应外部人员使用的`JDJR_Gandalf.podspec`文件
-  `JDJR_Gandalf.podspec`文件上传到提供静态服务的网站即可，我是在本地测试通过的
+- 第三步 生成对应外部人员使用的`UtilCore.podspec`文件
+  `UtilCore.podspec`文件上传到提供静态服务的网站即可，我是在本地测试通过的
 
 ```ruby
 Pod::Spec.new do |s|
-  s.name             = 'JDJR_Gandalf'
+  s.name             = 'UtilCore'
   s.version          = '0.0.3'
   s.summary          = '京东金融基础工具库'
 
@@ -131,22 +131,22 @@ TODO:包含以下简单的工具封装，JSON的解析等基础库.
 
   s.homepage         = 'http://jci.cbpmgt.com/repo/repoDetailShow/4316/git'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'seongbrave' => 'chengyong@jd.com' }
-  s.source              = { :http => "http://o82jar85w.bkt.clouddn.com/JDJR_Gandalf.zip" }
+  s.author           = { 'seongbrave' => 'seongbrave@sina.com' }
+  s.source              = { :http => "http://o82jar85w.bkt.clouddn.com/UtilCore.zip" }
   s.social_media_url = 'http://seongbrave.github.io/'
-  s.vendored_frameworks = "*/JDJR_Gandalf.framework"
+  s.vendored_frameworks = "*/UtilCore.framework"
   s.framework           = "CoreTelephony"
-  s.xcconfig            = { "LIBRARY_SEARCH_PATHS" => "\"$(PODS_ROOT)/JDJR_Gandalf/**\"" }
+  s.xcconfig            = { "LIBRARY_SEARCH_PATHS" => "\"$(PODS_ROOT)/UtilCore/**\"" }
 end
 ```
 
 - 第四步 具体 demo 的`pofile`文件中的使用
 
 ```ruby
-pod 'JDJR_Gandalf', :podspec => "http://10.13.100.75:8887/JDJR_Gandalf.podspec"
+pod 'UtilCore', :podspec => "http://10.13.100.75:8887/UtilCore.podspec"
 ```
 
-最后说下 上面的代码中的 `s.name = 'JDJR_Gandalf'`这个 name 很关键 ，这块的 name 直接决定了使用的时候在 `podfile`文件中引用第三方项目的名称的
+最后说下 上面的代码中的 `s.name = 'UtilCore'`这个 name 很关键 ，这块的 name 直接决定了使用的时候在 `podfile`文件中引用第三方项目的名称的
 
 #### 2. 私有库中包含了其它静态库或者私有的 Framework
 
@@ -159,7 +159,7 @@ pod 'JDJR_Gandalf', :podspec => "http://10.13.100.75:8887/JDJR_Gandalf.podspec"
 > 这时候如果拿去运行，则会报错，因为我们依赖的静态库`没有`被打包到`Framework`中，这个文件是我们的静态库依赖的另一个静态库，需要你手动添加进项目，所以再把依赖的这个静态库 拖进项目就好了，运行成功
 
 ```ruby
-pod package JDCNSDK.podspec  --force  --spec-sources=http://jcode.cbpmgt.com/git/JDJRSpecs.git,https://github.com/CocoaPods/Specs.git --no-mangle
+pod package CYSpecs.podspec  --force  --spec-sources=https://git.coding.net/SeongBrave/CYSpecs.git,https://github.com/CocoaPods/Specs.git --no-mangle
 ```
 
 上面的命令中，有一个是--no-mangle，表示 Do not mangle symbols of depedendant Pods，当你的项目依赖包含 **静态库**时
@@ -195,9 +195,23 @@ end
 
 ### podfile
 
+首先导入私有仓储
+
 ```ruby
 source 'https://github.com/CocoaPods/Specs.git'  # 官方库
-source 'http://jcode.cbpmgt.com/git/JDJRSpecs.git'   # 私有库
+source 'https://git.coding.net/SeongBrave/CYSpecs.git'   # 私有库
+```
+
+然后引入私有库即可
+
+```ruby
+pod 'UtilCore', '0.0.7'
+```
+
+#### 如果处于开发阶段可以指定模块仓储地址并且指定分子
+
+```ruby
+ pod 'UtilCore', :git => 'https://github.com/SeongBrave/UtilCore.git', :branch => 'dev'
 ```
 
 ## 4. 遇到的问题
