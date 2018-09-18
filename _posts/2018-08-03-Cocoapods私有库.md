@@ -286,6 +286,34 @@ pod playgrounds SnapKit
 
 > [参考资料](https://www.jianshu.com/p/544df88b6a1e) ![](/images/20180803/002.png)
 
+## cocoapods 版本降级
+
+> [参考资料](https://blog.csdn.net/majiakun1/article/details/50474879)
+
+### 1. 移除 pod 组件
+
+```shell
+which pod
+```
+
+### 2.你可以手动移除这个组件 :
+
+```shell
+sudo rm -rf <path>
+```
+
+### 3. 查看 gems 中本地程序包
+
+```shell
+gem list --local | grep cocoapods
+```
+
+### 4. 最后指定版本全部删除
+
+```shell
+sudo gem uninstall cocoapods-packager -v 1.5.0
+```
+
 ## 参考资料
 
 1.  [创建私有库](http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/)
