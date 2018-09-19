@@ -323,3 +323,4 @@ sudo gem uninstall cocoapods-packager -v 1.5.0
 5.  [官方资料](https://guides.cocoapods.org/syntax/podspec.html)
 6.  [cocoaPods 进行 SDK 二次包装(cocoapods-packager 完成 framework 静态库打包,避免第三方库冲突)](https://blog.csdn.net/iOSTianNan/article/details/81007691)
 7.  [CocoaPods 动/静态库混用封装组件化](https://www.jianshu.com/p/544df88b6a1e) 推荐:<font color=red>**\*\*\***</font>
+8.  [与 Cocoapods 抗战的一天](https://shixiong.name/tech/2018/05/22/fight-with-cocoapods.html)
