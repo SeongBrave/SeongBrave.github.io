@@ -210,6 +210,8 @@ pod 'UtilCore', '0.0.7'
 
 #### 如果处于开发阶段可以指定模块仓储地址并且指定分子
 
+> [The Podfile](https://guides.cocoapods.org/using/the-podfile.html)
+
 ```ruby
  pod 'UtilCore', :git => 'https://github.com/SeongBrave/UtilCore.git', :branch => 'dev'
 ```
