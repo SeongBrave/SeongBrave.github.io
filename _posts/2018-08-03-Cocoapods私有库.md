@@ -24,6 +24,18 @@ pod repo add CYSpecs https://git.coding.net/SeongBrave/CYSpecs.git
  pod lib create UtilCore
 ```
 
+这个错误是因为依赖库（s.dependency）包含了.a 静态库造成的。虽然这并不影响 Pod 的使用，但是验证是无法通过的。可以通过 --use-libraries 来让验证通过。
+
+```ruby
+pod spec lint UtilCore.podspec --verbose --use-libraries
+```
+
+这种情况下使用 --use-libraries 虽然不会出现错误（error），但是有时候会带来一些警告（waring），警告同样是无法通过验证的。这时可以用 --allow-warnings 来允许警告。
+
+```ruby
+pod spec lint UtilCore.podspec --verbose --use-libraries --allow-warnings
+```
+
 #### 1.1 只创建一个 podspecs
 
 ```ruby
@@ -326,3 +338,4 @@ sudo gem uninstall cocoapods-packager -v 1.5.0
 6.  [cocoaPods 进行 SDK 二次包装(cocoapods-packager 完成 framework 静态库打包,避免第三方库冲突)](https://blog.csdn.net/iOSTianNan/article/details/81007691)
 7.  [CocoaPods 动/静态库混用封装组件化](https://www.jianshu.com/p/544df88b6a1e) 推荐:<font color=red>**\*\*\***</font>
 8.  [与 Cocoapods 抗战的一天](https://shixiong.name/tech/2018/05/22/fight-with-cocoapods.html)
+9.  [CocoaPods 建立自己的 Podspec（三）](https://www.jianshu.com/p/dddd32fa7477)
