@@ -373,7 +373,7 @@ sudo gem uninstall cocoapods-packager -v 1.5.0
 
 - 如果模块中包含了静态库则打包的时候必须添加改参数,否则编译不通过,报错:`!] podspec has binary-only depedencies, mangling not possible.`
 - 但是如果增加了改参数打包,则打包出来的 Framework 集成到主项目有可能会与之前的同名文件报冲突
-- 从上面的一条说明`--no-mangle`编译的时候统一增加了前缀
+- 从上面的一条说明不加参数`--no-mangle`编译的时候统一增加了前缀,加上`--no-managle`就不会添加参数了
 
 ## 参考资料
 
