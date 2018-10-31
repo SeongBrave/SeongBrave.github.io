@@ -379,11 +379,31 @@ sudo gem uninstall cocoapods-packager -v 1.5.0
 - 但是如果增加了改参数打包,则打包出来的 Framework 集成到主项目有可能会与之前的同名文件报冲突
 - 从上面的一条说明不加参数`--no-mangle`编译的时候统一增加了前缀,加上`--no-managle`就不会添加参数了
 
+```
+我试了一下, 按楼主提供的方式打包是没有问题的.
+上面出现的问题主要是两个,
+1) 头文件找不到.
+cocoapods packager 也没有对头文件做改动, 就是单纯地做拷贝. 所以自己拷贝一个头文件到需要集成静态库的工程里去就行了. 静态库对外暴露的头文件一般也不多, 也就一两个, 而且每次头文件也基本不会变, ,所以也不算太大问题.
+
+2) 出现 Undefined symbols for architecture, 也就是符号找不到.
+因为打成的包还是一个静态库,不可能把系统的动态库也给打进去. 所以使用这个静态库的工程还是要手动去链接动态库, 包括这个静态库依赖的第三方库所要用到的动态库.
+
+按这个例子就是, 使用这个静态库时, 首先需要链接 libBZLib.a, 然后还需要链接 YSASIHTTPRequest 所依赖的动态库. 如 SystemConfig, MobileCoreService, CFNetwork, CoreGraphics, z.1 等.
+
+也就是说用它来打包生成静态库是没有问题的.但是
+3) 符号混淆. cocoapods packager 确实也做了. 但是做得不够好.
+使用引用链接里的方法, 用 nm 检查一下生成的 libBZLib.a, 会发现大部分符号确实是做了 mangling. 但是如果在集成了 libBZLib 的工程里, 再用 Podfile 去引用 YSASIHTTPRequest 时,会发现报符号重复, cocoapods packager 漏了几个符号没有做 mangling, 其实就等于没有做 mangling. 导致实际上还是不能在静态库把 YSASIHTTPRequest 给打进去.
+而且 cocoapods packager 看起来并不活跃, 稳定性也不能保证.
+
+总结下就是, 如果不需要它的 mangling 功能, 可以试一试. 如果需要 mangling 功能,还是使用引用链接里提供的脚本, 自己处理吧.
+```
+
 ![](/images/20181029/001.png)
 
 ![](/images/20181029/002.png)
 
 - [参考资料](https://www.zybuluo.com/qidiandasheng/note/595740)
+- [Name Mangling in C++](http://blog.51cto.com/hipercomer/855223)
 
 ## 参考资料
 
