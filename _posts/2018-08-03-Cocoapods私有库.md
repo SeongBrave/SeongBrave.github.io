@@ -369,6 +369,10 @@ sudo gem uninstall cocoapods-packager -v 1.5.0
 
 ### 个人理解
 
+> 表示不使用 [name mangling](https://blog.csdn.net/dashuniuniu/article/details/50765865) 技术，`pod package`默认是使用这个技术的。我们能在用 pod package 生成二进制库的时候会看到终端有输出 `Mangling symbols` 和 `Building mangled framework`。表示使用了这个技术。
+
+> 如果你的 pod 库没有其他依赖的话，那么不使用这个命令也不会报错。但是如果有其他依赖，不使用`--no-mangle` 这个命令的话，那么你在工程里使用生成的二进制库的时候就会报错：`Undefined symbols for architecture x86_64`。
+
 #### 1. --no-mangle
 
 - 如果模块中包含了静态库则打包的时候必须添加改参数,否则编译不通过,报错:`!] podspec has binary-only depedencies, mangling not possible.`
@@ -378,6 +382,8 @@ sudo gem uninstall cocoapods-packager -v 1.5.0
 ![](/images/20181029/001.png)
 
 ![](/images/20181029/002.png)
+
+- [参考资料](https://www.zybuluo.com/qidiandasheng/note/595740)
 
 ## 参考资料
 
