@@ -116,7 +116,7 @@ Demo 效果演示
 
 项目中大部分的逻辑处理是借助 RxSwift 实现的响应式编程，当界面上的每个操作都会转换为一个信号然后通过对信号的各种加工网络请求，到返回的数据 JSON 解析以及错误对象的处理，感觉整个开发都是在开凿水渠，等开发完了就不用管了。
 
-### 网络请求
+## 网络请求
 
 [NetWorkCore](https://github.com/SeongBrave/NetWorkCore)通过对[Alamofire](https://github.com/Alamofire/Alamofire)简单封装，配合[RxSwift](https://github.com/ReactiveX/RxSwift)可以很简单的实现一个网络请求，并且完成数据解析对应的 Mode 实体类，如下所示，即可实现一个用户登录的网络请求。
 
@@ -138,7 +138,7 @@ Demo 效果演示
             .disposed(by: disposeBag)
 ```
 
-### 错误处理
+## 错误处理
 
 监控整个 App 的所有错误，然后通过一些规则筛选最后展示给用户是我们在开发一个 App 的时候需要考虑处理的，比如在下拉列表的时候，发送网络请求，这时候网络请求失败了，需要界面上展示网络错误，并且显示重新加载的按钮，或者是如果在调用相机获取授权的时用户没有授权的时候，需要提示给用户授权相关的信息，等等这些逻辑处理都可以通过流的形式处理，在处理用户网络错误加载失败的时候，通过 `RxSwift` 的一个很简单的 Api:`withLatestFrom`就能实现数据重新加载，而不需要记住各种复杂的参数。
 
@@ -267,7 +267,7 @@ extension String {
 
 CocoaPods 公共组件模块可以很方便集成现有的模块，但是我们每个业务都是完全不一样的，每个接口返回的 JSON 文件也不一样，然后我们得手动创建与之对应的 Model，这些操作完全没有任何意义但是又是必须的，不过现在我们可以使用 [Gckit-CLI](https://github.com/SeongBrave/gckit) 一键生成对应的所有 Model 实体类，我们只需要把对应的 JSON 文件放到对应的目录即可，[Gckit-CLI](https://github.com/SeongBrave/gckit) 不仅可以生成 Model 文件，ViewModel、ViewController、View、Cell 等各种文件，并且是一键生成，大家可以尝试使用下，如果觉得可以的话麻烦给一个**Star**吧 😂。
 
-### 公用模块
+## 公用模块
 
 公司的公用组件应该是长期积累的，不同的该功能，大部分是与业务无关的可以扩 App 或者夸业务使用的，经过长时间的积累会慢慢完善，比如京东内部有各种各样的模块组件，对与新开发一个项目来说会提高很多倍，这些公用组件模块通过 CocoaPods 管理，或者也可以通过 Framework 管理
 
