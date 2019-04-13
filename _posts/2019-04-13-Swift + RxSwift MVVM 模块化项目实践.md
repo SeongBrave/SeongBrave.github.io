@@ -4,13 +4,13 @@ title: 'Swift + RxSwift MVVM 模块化项目实践'
 date: 2019-04-13
 comments: true
 categories: Swift
-tags: [Swift,RxSwift,MVVM]
+tags: [RxSwift]
 published: ture
 keywords: RxSwift
 description: Swift + RxSwift MVVM 模块化项目实践
 ---
 
-<div align=center><img  src="/images/20190413/banner.png"/></div>
+![banner.png](/images/20190413/banner.png)
 
 本文主要介绍个人在 Swift 项目开发中的一些实践经验，供大家所借鉴或者探讨。
 
