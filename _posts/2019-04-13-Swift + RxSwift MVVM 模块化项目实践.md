@@ -12,6 +12,20 @@ description: Swift + RxSwift MVVM 模块化项目实践
 
 ![banner.png](/images/20190413/banner.png)
 
+- [项目介绍](#%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D)
+- [App 架构设计](#app-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1)
+- [业务模块](#%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97)
+- [公用模块](#%E5%85%AC%E7%94%A8%E6%A8%A1%E5%9D%97)
+- [RxSwift 的使用](#rxswift-%E7%9A%84%E4%BD%BF%E7%94%A8)
+- [网络请求](#%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82)
+- [模块路由](#%E6%A8%A1%E5%9D%97%E8%B7%AF%E7%94%B1)
+- [错误处理](#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86)
+  - [指令码](#%E6%8C%87%E4%BB%A4%E7%A0%81)
+- [MVVM 架构设计](#mvvm-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1)
+- [Gckit-CLI 的使用](#gckit-cli-%E7%9A%84%E4%BD%BF%E7%94%A8)
+- [Node.js 接口服务](#nodejs-%E6%8E%A5%E5%8F%A3%E6%9C%8D%E5%8A%A1)
+- [总结](#%E6%80%BB%E7%BB%93)
+
 本文主要介绍个人在 Swift 项目开发中的一些实践经验，供大家所借鉴或者探讨。
 
 提高开发效率，降低 Bug 发生率，是我们每个开发所追随的目标。个人认为通过 CocoaPods 实现模块化组件化，积累适合的组件模块，重复利用公用模块，不仅可以提高开发效率并且可以有效的降低 Bug 的发生，另外可以借助 [Gckit-CLI](https://github.com/SeongBrave/gckit) 等脚本工具降低重复无用的代码编写，进一步提高开发效率，降低低级错误的发生，本文以下内容主要讲解个人通过 CocoaPods 结合 [Gckit-CLI](https://github.com/SeongBrave/gckit) 实现开发效率的最大化的一些项目实践
@@ -19,21 +33,27 @@ description: Swift + RxSwift MVVM 模块化项目实践
 ## 项目介绍
 
 > Twilight，项目取自暮光之城电影名
-> 所有的资源都已经开源道 Github 上了，包括服务端的接口项目
+> 所有的资源都已经开源到 Github 上了，包括服务端的接口项目
 
 Demo 效果演示
 
 ![showapp.gif](/images/20190413/showapp.gif)
 
+## App 架构设计
+
+![structurechart](/images/20190413/structurechart.png)
+
+最顶层为 `主工程`，包含一些简单的配置、路由注册等，相当于一个空壳，模块化之后需要注意的一点是:模块的版本管理，每次发版一定要记录好每个模块的版本号等，否则代码回退、Bug 排查是一件很困难的事，我们主工程中会记录每次发版时各个模块的版本号的。接下来就是`业务层`，包括各个不同的业务模块，这些模块之间的调用是通过路由实现的，不能存在引用关系的，每个模块会依赖一个`上下文模块`和`项目配置模块`，`上下文模块`主要是管理用户对象等用户权限相关的事，`项目配置模块`主要是整体 App 的一些配置数据、以及主题颜色和一些第三方 key 的配置等(主要为了方便配置统一管理)。业务层是整个 App 的核心功能，而`公用组件模块`是跨业务、跨 App 的，不同的 App 之间是可以公用这些组件的，这一层最好作为公司级别的供大家所有人使用。最下层为第三方库，一般情况下我们需要对第三方做一层脱离耦合的封装，以便我们在修改第三方时而不影响我们的业务模块。整个项目从上到下为依赖关系，下层为上层提供功能服务。
+
 ## 业务模块
 
-| 模块            | 介绍             | 地址                                            |
-|---------------|----------------|-----------------------------------------------|
-| Carlisle      | 登陆注册模块         | `https://github.com/SeongBrave/Carlisle.git`  |
-| Bella         | 上下文模块          | `https://github.com/SeongBrave/Bella.git`     |
-| Alice         | 项目配置模块         | `https://github.com/SeongBrave/Alice.git`     |
+| 模块          | 介绍               | 地址                                          |
+| ------------- | ------------------ | --------------------------------------------- |
+| Carlisle      | 登陆注册模块       | `https://github.com/SeongBrave/Carlisle.git`  |
+| Bella         | 上下文模块         | `https://github.com/SeongBrave/Bella.git`     |
+| Alice         | 项目配置模块       | `https://github.com/SeongBrave/Alice.git`     |
 | Jacob         | 首页模块           | `https://github.com/SeongBrave/Jacob`         |
-| Twilight      | 主工程项目          | `https://github.com/SeongBrave/Twilight.git`  |
+| Twilight      | 主工程项目         | `https://github.com/SeongBrave/Twilight.git`  |
 | TwilightSpecs | CocoaPods 私有仓储 | `https://github.com/SeongBrave/TwilightSpecs` |
 
 登陆注册模块([Carlisle](https://github.com/SeongBrave/Carlisle.git))
@@ -110,6 +130,18 @@ Demo 效果演示
 
 上面的代码 通过信号筛选，`reloadTrigger`代表点击重新加载的事件，经过参数格式化、发送网络请求、数据解析等数据处理，最后只需关注解析成功之后的 Model 数据然后更新 UI 界面。
 
+## 公用模块
+
+公司的公用组件应该是长期积累的，不同的该功能，大部分是与业务无关的可以扩 App 或者夸业务使用的，经过长时间的积累会慢慢完善，比如京东内部有各种各样的模块组件，对与新开发一个项目来说会提高很多倍，这些公用组件模块通过 CocoaPods 管理，或者也可以通过 Framework 管理
+
+以下是我个人积累的一些公用库，平常写 Demo 啥的都是非常方便的
+
+| 模块          | 介绍                       | 地址                                          |
+| ------------- | -------------------------- | --------------------------------------------- |
+| UtilCore      | 基础工具库                 | `https://github.com/SeongBrave/UtilCore`      |
+| NetWorkCore   | 网络工具库                 | `https://github.com/SeongBrave/NetWorkCore`   |
+| EmptyDataView | 列表为空时自定义展示空界面 | `https://github.com/SeongBrave/EmptyDataView` |
+
 ## RxSwift 的使用
 
 项目中大部分的逻辑处理是借助 RxSwift 实现的响应式编程，当界面上的每个操作都会转换为一个信号然后通过对信号的各种加工网络请求，到返回的数据 JSON 解析以及错误对象的处理，感觉整个开发都是在开凿水渠，等开发完了就不用管了。
@@ -135,68 +167,6 @@ Demo 效果演示
             })
             .disposed(by: disposeBag)
 ```
-
-## 错误处理
-
-监控整个 App 的所有错误，然后通过一些规则筛选最后展示给用户是我们在开发一个 App 的时候需要考虑处理的，比如在下拉列表的时候，发送网络请求，这时候网络请求失败了，需要界面上展示网络错误，并且显示重新加载的按钮，或者是如果在调用相机获取授权的时用户没有授权的时候，需要提示给用户授权相关的信息，等等这些逻辑处理都可以通过流的形式处理，在处理用户网络错误加载失败的时候，通过 `RxSwift` 的一个很简单的 Api:`withLatestFrom`就能实现数据重新加载，而不需要记住各种复杂的参数。
-
-根据错误码的不同进行不同的错误逻辑处理，如下代码所示
-
-```swift
-/**
-     通过 mikerError 显示错误信息
-     202024： 请登录后再操作
-     - parameter error:
-     */
-    public func toastError(_ error:MikerError){
-        if error.code == UtilCore.sharedInstance.toLoginErrorCode {
-            self.toastCompletion(error.message){ _ in
-                /**
-                 *  在这块 就是跳转到登陆模块,如果已经跳转就不需要直接忽略 否则 先将AppData.sharedInstance.isHasToLoginVc改为true然后再跳转
-                 */
-                if UtilCore.sharedInstance.isHasToLoginVc == false {
-                    _ = "login".openURL()
-                }
-            }
-        } else if error.code == UtilCore.sharedInstance.toForcedupdatingErrorCode {
-            /*
-            表示版本强制更新
-             */
-            if UtilCore.sharedInstance.isHasForcedupdating == false {
-                UtilCore.sharedInstance.isHasForcedupdating = true
-                _ = "forcedupdating".openURL(["message":error.message])
-            }
-
-        } else {
-            if UtilCore.sharedInstance.isDebug {
-                self.toast(error.message)
-            } else {
-                 ///表示是生产模式
-                let code = "\(error.code)"
-                if code.hasPrefix("2") {
-                    self.toast(error.message)
-                } else {
-                    self.toast(UtilCore.sharedInstance.errorMsg)
-                }
-            }
-        }
-    }
-```
-
-### 指令码
-
-与服务端确认配合确定，通过`错误码`与`路由`结合能达到一种指令码的效果，客户端取到服务端返回的`错误码`的时候先进行逻辑判断，适配一些规则，如果符合则取服务端返回的`uri`字段，直接进行路由跳转，否则走错误处理抛出。这种`指令码`可以达到一些客户端的跳转逻辑交由服务端来控制，比如在注册完毕之后是跳转首页还是继续补充完详细信息的这种需求是可以根据服务端返回的`指令码`来决定。
-
-## MVVM 架构设计
-
-一直觉得[南峰子](http://southpeak.github.io/)翻译的这两篇文章挺不错的虽然是 2014 的文章了，感兴趣的可以看下
-
-- [MVVM Tutorial with ReactiveCocoa: Part 1/2](http://southpeak.github.io/2014/08/08/mvvm-tutorial-with-reactivecocoa-1/)
-- [MVVM Tutorial with ReactiveCocoa: Part 2/2](http://southpeak.github.io/2014/08/12/mvvm-tutorial-with-reactivecocoa-2/)
-
-  ![mvvm](/images/20190413/mvvm.png)
-
-另外`登陆注册模块(Carlisle)`是参考[RxSwift](https://github.com/ReactiveX/RxSwift)官方 Demo 设计的，使用 MVVM 架构设计，虽然没有严格遵守上面文章所说的 MVVM 引用层次，不过`登陆注册模块(Carlisle)`还是可以灵活的适用于不同的需求的在简单修改之后。
 
 ## 模块路由
 
@@ -261,31 +231,75 @@ extension String {
 
 每个模块都有各自的模块路由注册类，比如`Jacob_router.swift`，包含了该模块内部所有的可路由的界面和事件处理的路由注册，最后会在主模块中统一注册
 
+## 错误处理
+
+监控整个 App 的所有错误，然后通过一些规则筛选最后展示给用户是我们在开发一个 App 的时候需要考虑处理的，比如在下拉列表的时候，发送网络请求，这时候网络请求失败了，需要界面上展示网络错误，并且显示重新加载的按钮，或者是如果在调用相机获取授权的时用户没有授权的时候，需要提示给用户授权相关的信息，等等这些逻辑处理都可以通过流的形式处理，在处理用户网络错误加载失败的时候，通过 `RxSwift` 的一个很简单的 Api:`withLatestFrom`就能实现数据重新加载，而不需要记住各种复杂的参数。
+
+根据错误码的不同进行不同的错误逻辑处理，如下代码所示
+
+```swift
+/**
+     通过 mikerError 显示错误信息
+     202024： 请登录后再操作
+     - parameter error:
+     */
+    public func toastError(_ error:MikerError){
+        if error.code == UtilCore.sharedInstance.toLoginErrorCode {
+            self.toastCompletion(error.message){ _ in
+                /**
+                 *  在这块 就是跳转到登陆模块,如果已经跳转就不需要直接忽略 否则 先将AppData.sharedInstance.isHasToLoginVc改为true然后再跳转
+                 */
+                if UtilCore.sharedInstance.isHasToLoginVc == false {
+                    _ = "login".openURL()
+                }
+            }
+        } else if error.code == UtilCore.sharedInstance.toForcedupdatingErrorCode {
+            /*
+            表示版本强制更新
+             */
+            if UtilCore.sharedInstance.isHasForcedupdating == false {
+                UtilCore.sharedInstance.isHasForcedupdating = true
+                _ = "forcedupdating".openURL(["message":error.message])
+            }
+
+        } else {
+            if UtilCore.sharedInstance.isDebug {
+                self.toast(error.message)
+            } else {
+                 ///表示是生产模式
+                let code = "\(error.code)"
+                if code.hasPrefix("2") {
+                    self.toast(error.message)
+                } else {
+                    self.toast(UtilCore.sharedInstance.errorMsg)
+                }
+            }
+        }
+    }
+```
+
+### 指令码
+
+与服务端确认配合确定，通过`错误码`与`路由`结合能达到一种指令码的效果，客户端取到服务端返回的`错误码`的时候先进行逻辑判断，适配一些规则，如果符合则取服务端返回的`uri`字段，直接进行路由跳转，否则走错误处理抛出。这种`指令码`可以达到一些客户端的跳转逻辑交由服务端来控制，比如在注册完毕之后是跳转首页还是继续补充完详细信息的这种需求是可以根据服务端返回的`指令码`来决定。
+
+## MVVM 架构设计
+
+一直觉得[南峰子](http://southpeak.github.io/)翻译的这两篇文章挺不错的虽然是 2014 的文章了，感兴趣的可以看下
+
+- [MVVM Tutorial with ReactiveCocoa: Part 1/2](http://southpeak.github.io/2014/08/08/mvvm-tutorial-with-reactivecocoa-1/)
+- [MVVM Tutorial with ReactiveCocoa: Part 2/2](http://southpeak.github.io/2014/08/12/mvvm-tutorial-with-reactivecocoa-2/)
+
+  ![mvvm](/images/20190413/mvvm.png)
+
+另外`登陆注册模块(Carlisle)`是参考[RxSwift](https://github.com/ReactiveX/RxSwift)官方 Demo 设计的，使用 MVVM 架构设计，虽然没有严格遵守上面文章所说的 MVVM 引用层次，不过`登陆注册模块(Carlisle)`还是可以灵活的适用于不同的需求的在简单修改之后。
+
 ## Gckit-CLI 的使用
 
 CocoaPods 公共组件模块可以很方便集成现有的模块，但是我们每个业务都是完全不一样的，每个接口返回的 JSON 文件也不一样，然后我们得手动创建与之对应的 Model，这些操作完全没有任何意义但是又是必须的，不过现在我们可以使用 [Gckit-CLI](https://github.com/SeongBrave/gckit) 一键生成对应的所有 Model 实体类，我们只需要把对应的 JSON 文件放到对应的目录即可，[Gckit-CLI](https://github.com/SeongBrave/gckit) 不仅可以生成 Model 文件，ViewModel、ViewController、View、Cell 等各种文件，并且是一键生成，大家可以尝试使用下，如果觉得可以的话麻烦给一个**Star**吧 😂。
 
-## 公用模块
-
-公司的公用组件应该是长期积累的，不同的该功能，大部分是与业务无关的可以扩 App 或者夸业务使用的，经过长时间的积累会慢慢完善，比如京东内部有各种各样的模块组件，对与新开发一个项目来说会提高很多倍，这些公用组件模块通过 CocoaPods 管理，或者也可以通过 Framework 管理
-
-以下是我个人积累的一些公用库，平常写 Demo 啥的都是非常方便的
-
-| 模块            | 介绍            | 地址                                            |
-|---------------|---------------|-----------------------------------------------|
-| UtilCore      | 基础工具库         | `https://github.com/SeongBrave/UtilCore`      |
-| NetWorkCore   | 网络工具库         | `https://github.com/SeongBrave/NetWorkCore`   |
-| EmptyDataView | 列表为空时自定义展示空界面 | `https://github.com/SeongBrave/EmptyDataView` |
-
 ## Node.js 接口服务
 
 [twilight_app](https://github.com/SeongBrave/twilight_app) 为项目后台的接口服务，一个客户端开发的思维开发的后台接口服务 😂，功能很简单，如果感兴趣的可以下载看下
-
-## App 架构设计
-
-![structurechart](/images/20190413/structurechart.png)
-
-最顶层为 `主工程`，包含一些简单的配置、路由注册等，相当于一个空壳，模块化之后需要注意的一点是:模块的版本管理，每次发版一定要记录好每个模块的版本号等，否则代码回退、Bug 排查是一件很困难的事，我们主工程中会记录每次发版时各个模块的版本号的。接下来就是`业务层`，包括各个不同的业务模块，这些模块之间的调用是通过路由实现的，不能存在引用关系的，每个模块会依赖一个`上下文模块`和`项目配置模块`，`上下文模块`主要是管理用户对象等用户权限相关的事，`项目配置模块`主要是整体 App 的一些配置数据、以及主题颜色和一些第三方 key 的配置等(主要为了方便配置统一管理)。业务层是整个 App 的核心功能，而`公用组件模块`是跨业务、跨 App 的，不同的 App 之间是可以公用这些组件的，这一层最好作为公司级别的供大家所有人使用。最下层为第三方库，一般情况下我们需要对第三方做一层脱离耦合的封装，以便我们在修改第三方时而不影响我们的业务模块。整个项目从上到下为依赖关系，下层为上层提供功能服务。
 
 ## 总结
 
