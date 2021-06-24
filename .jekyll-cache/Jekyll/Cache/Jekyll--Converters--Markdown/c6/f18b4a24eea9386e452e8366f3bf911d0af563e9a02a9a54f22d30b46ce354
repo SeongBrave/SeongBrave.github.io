@@ -1,0 +1,52 @@
+I"�
+<p>ios多工程依赖</p>
+
+<p>CodeSign error: code signing is required for product type ‘Unit Test Bundle’</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>做程序员稍微久点就会发现每次做新项目的时候拖自己的工具代码很费劲，写个简单的教程来管理工具类，并在新工程里引用
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>###导入准备工作</p>
+
+<ul>
+  <li>1.建立一个Framework &amp; Library-&gt;Cocoa Touch Static Library 取名A，并在A里新建一个类用来测试
+    <ol>
+      <li>建立一个demo工程B</li>
+      <li>把工程A整个文件夹复制到B工程文件夹里，位置随便选（只要你会添加头文件搜索路劲,如果不会，建议去另一篇教程学习http://blog.sina.com.cn/s/blog_877e9c3c0102v591.html）</li>
+      <li>打开A右键“Add Files To B”,选择B.xodeproj,不要选择Copy items if needed</li>
+    </ol>
+  </li>
+</ul>
+
+<p>##设置工作</p>
+<ol>
+  <li>
+    <p>编译A的静态库
+选择工程A，设备调为iOS Device，编译，会报错1.“CodeSign error: code signing is required for product type ‘Unit Test Bundle’ in SDK ‘iOS 8.1’”  
+ 解决办法：选择A工程－&gt;Build Settings -&gt; Code Signing -&gt; Code Signing Identity -&gt; Debug -&gt; Any ios SDK 将选项改为：iPhone Developer   （记住是选择project而不是target）
+再编译，即可成功，这时候products里就出现了正常的A.a静态库</p>
+  </li>
+  <li>
+    <p>建立相关引用
+B-Build Setting-Header Search Paths   (添加头文件搜索路劲)
+B-Build Phases - Link Binary With Libraries 添加A.a
+B-Build Phases - Target Dependencies 添加A工程依赖关系  （确保编译B的时候先编译A）</p>
+  </li>
+  <li>
+    <p>如果A里面有图片或者其他的依赖库
+B-Build Phases - Copy Files添加对应的图片和依赖库</p>
+  </li>
+  <li>
+    <p>如果A里有category，使用category的时候会crash
+B-Other Linker Flags 添加-Objc和-all_load确保category被正常引入</p>
+  </li>
+  <li>
+    <p>***打包注意事项
+有依赖库的时候，Archive通常在organize里找不到项目或者没有version和identifier
+要把依赖库A-Build Settings-Skip Install设置为YES，但项目BSkip Install设置为NO</p>
+
+    <p>另外依赖库还要做如下设置（借鉴） 将Build Phases-&gt;Copy Headers中的所有头文件拉到Project      下，即Public和Private下不能有文件清空Build Settings-&gt;Deployment-&gt;Installation Directory选项的内容</p>
+  </li>
+</ol>
+:ET

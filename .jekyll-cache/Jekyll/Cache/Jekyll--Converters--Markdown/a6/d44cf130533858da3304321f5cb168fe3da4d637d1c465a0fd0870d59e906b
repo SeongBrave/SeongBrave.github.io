@@ -1,0 +1,717 @@
+I"�7<p>1 #region 7.1 系统泛型委托 - Action 委托 - 无返回值
+        ///
+        /// 7.1 系统泛型委托 - Action 委托
+        ///
+        static void TestAction()
+        {
+            List list = GetDogList();
+            //7.1.1调用 List 集合的 ForEach 方法 遍历 集合，每次遍历 一个元素 就会调用一下 传入的 Action委托，并将 元素传入Action参数
+            list.ForEach(new Action(delegate(C01Dog d) { Console.WriteLine(d.Name + “,” + d.Age); }));</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+</pre></td> --><td class="rouge-code"><pre>        //7.1.2委托语法糖，编译时 会自动 new一个 Action委托来装 这个 匿名方法
+        list.ForEach(delegate(C01Dog d){
+            Console.WriteLine(d.Name + "," + d.Age);
+        });
+
+    } 
+    #endregion
+
+    #region 7.2 系统泛型委托 - Predicate - 返回bool
+    ///
+    /// 7.2 系统泛型委托 - Predicate - 返回bool
+    ///
+    static void TestPredicate()
+    {
+        List list = GetDogList();
+        //list = list.FindAll(new Predicate(delegate(C01Dog d) { return d.Age &gt; 1; }));
+        //使用FindAll方法，可以帮我们 根据条件 筛选 出一个新的集合
+        list = list.FindAll(delegate(C01Dog d) { 
+            return d.Age &gt; 1; 
+        });
+
+        list.DeleteItem(delegate(C01Dog d) {
+            return d.Age == 2;
+        });
+
+        list.ForEach(delegate(C01Dog d) { Console.WriteLine(d.Name + "," + d.Age); });
+
+        //List listNew = list.MyFindAll(delegate(C01Dog d) { return d.Age &gt; 1; });
+    } 
+    #endregion
+
+    #region 7.2 自己实现一个 根据条件查找的 方法 - Predicate - 返回bool
+    ///
+    /// 自己实现一个 根据条件查找的 方法
+    ///
+    static List MyFindAll(this List list, Predicate predicate)
+    {
+        //创建新集合
+        List newList = new List();
+        //遍历老集合
+        foreach (T item in list)
+        {
+            //如果老集合里的 item 符合 条件，则 把item 添加到 新集合中
+            //调用传入的 predicate委托 方法，作为 是否符合条件的判断
+            if (predicate(item))
+            {
+                newList.Add(item);
+            }
+        }
+        return newList; 
+    } 
+    #endregion
+
+    #region 7.2 自己实现一个 根据条件删除的 方法 - Predicate - 返回bool值的委托
+    ///
+    /// 7.2 自己实现一个 根据条件删除的 方法 - Predicate - 返回bool值的委托
+    ///
+    static void DeleteItem(this List list, Predicate deleteWhere)
+    {
+        //要删除的元素集合
+        List deletedItems = new List();
+        //遍历 数据集合 根据条件找到要删除的元素 添加到 删除元素集合中
+        foreach (T item in list)
+        {
+            if (deleteWhere(item))//根据 传入的 条件 找到要删除的元素
+            {
+                deletedItems.Add(item);
+            }
+        }
+        //遍历要删除的元素，在数据集合中删除
+        foreach (T delItem in deletedItems)
+        {
+            list.Remove(delItem);
+        }
+    } 
+    #endregion
+
+    #region 7.3 系统泛型委托 - Comparison - 返回 int
+    ///
+    /// 7.3 系统泛型委托 - Comparison - 返回 int
+    ///
+    static void TestComparison()
+    {
+        List list = GetDogList();
+        list.Sort(delegate(C01Dog x, C01Dog y)
+        {
+            return y.Age - x.Age;
+        });
+
+        list.ForEach(delegate(C01Dog d)
+        {
+            Console.WriteLine(d.Name + "," + d.Age);
+        });
+    } 
+    #endregion
+
+    #region 7.4 系统泛型委托 - Func - 自定义返回值类型
+    ///
+    /// 7.4 系统泛型委托 - Func - 自定义返回值类型
+    ///
+    static void TestFunc()
+    {
+        List list = GetDogList();
+        //业务：完整写法：将 dog集合 转成 smallDog集合
+
+        //7.4.1 使用集合的扩展方法 Select 生成一个新的集合，传入 Func 委托对象
+        var it2 = list.Select(new Func(delegate(C01Dog d) { return new C02SmallDog(); }));
+
+        //7.4.2 使用集合的扩展方法 Select 生成一个新的集合，直接传入 匿名方法
+        var it3 = list.Select(delegate(C01Dog d) { return new C02SmallDog(); });
+
+        //7.4.3 模拟一个 Select 方法，传入Func委托
+        List list2 = list.MySelect(
+            new Func(delegate(C01Dog d)
+        {
+            return new C02SmallDog() { Name = d.Name };
+        })
+        );
+
+        //7.4.4 模拟一个Select方法，直接传入匿名方法
+        List listNew = list.MySelect(delegate(C01Dog d)
+        {
+            return new C02SmallDog() { Name = d.Name };
+        });
+    } 
+    #endregion
+
+    #region 7.4 自己模拟一个 Select 方法，用来将一个集合转成另一个集合
+    ///
+    /// 7.4 自己模拟一个 Select 方法，用来将一个集合转成另一个集合
+    ///
+    static ListMySelect(this Listlist, Funcfunc)
+    {
+        ListlistNew = new List();
+        //遍历老集合元素
+        foreach (T1 item in list)
+        {
+            //调用 func 委托 将 老集合元素 转成 另一个 元素 返回
+            TR re = func(item);
+            //将转换后的 新元素 ，存入新集合
+            listNew.Add(re);
+        }
+        //返回新集合
+        return listNew;
+    } 
+    #endregion
+
+    #region 7.4* 系统泛型委托 结合 匿名类使用 - Func - 自定义返回值类型
+    ///
+    /// 7.4* 系统泛型委托 结合 匿名类使用 - Func - 自定义返回值类型
+    ///
+    static void TestFuncRetrunAnoyClassList()
+    {
+        List list = GetDogList();
+        //业务：完整写法：将 dog集合 转成 只包含狗名字的 对象 集合
+        //使用 Select 方法 遍历 list集合，并转成 一个 匿名类对象 的集合
+        //                              (返回真实对象类型为： WhereSelectListIterator)
+        var it = list.Select(delegate(C01Dog d) { 
+            return new { Age = d.Age, Date = DateTime.Now }; 
+        });
+
+        var listNew = it.ToList();
+    }
+    #endregion
+
+    #region 8.0 Lambda表达式 和 语句Lambda
+    ///
+    /// 8.0 Lambda表达式 和 语句Lambda
+    ///
+    static void TestLambda()
+    {
+        List list = GetDogList();
+        list.ForEach(new Action(delegate(C01Dog d) { Console.WriteLine(d.Name); }));
+
+        //8.0.1 Lambda 表达式
+        list.ForEach(d =&gt; Console.WriteLine(d.Name));
+        list.FindAll(d =&gt; d.Age &gt; 1);
+        list.Sort((x, y) =&gt; x.Age - y.Age);
+        var it = list.Select(d =&gt; new C02SmallDog() { Name = d.Name });
+
+        //8.0.2 语句Lambda
+        var it2 = list.Select(d =&gt;
+        {
+            C02SmallDog sd = new C02SmallDog();
+            sd.Name = d.Name;
+            return sd;
+        });
+    } 
+    #endregion
+
+    #region 8.2 标准查询运算符 - Where 查询方法
+    ///
+    /// 8.2 标准查询运算符 - Where 查询方法
+    ///
+    static void SQOWhere()
+    {
+        List list = GetDogList();
+        //在集合中 筛选出 青壮年 公狗们
+        List listDog = list.Where(d =&gt; d.Gender == true &amp;&amp; d.Age &gt; 3 &amp;&amp; d.Age &lt; 39).ToList();
+        listDog.ForEach(d =&gt; Console.WriteLine(d.ToString()));
+    } 
+    #endregion
+
+    #region 8.3 标准查询运算符 - Select 投射方法（返回一个 新的集合）
+    ///
+    /// 8.3 标准查询运算符 - Select 投射方法（返回一个 新的集合）
+    ///
+    static void SQOSelect()
+    {
+        List list = GetDogList();
+
+        List listNew = list.Select(d =&gt; new C02SmallDog() { Name = d.Name }).ToList();
+    }
+    #endregion
+
+    #region 8.4 标准查询运算符 - Order 排序方法
+    ///
+    /// 8.4 标准查询运算符 - Order 排序方法
+    ///
+    static void SQOOrder()
+    {
+        List list = GetDogList();
+        //8.4.1 升序排列
+        //List listSorted = list.OrderBy(d =&gt; d.Age).ToList();
+        //8.4.2 降序排列
+        //List listSorted = list.OrderByDescending(d =&gt; d.Age).ToList();
+        //8.4.3 多条件排序
+        //List listSorted = list.OrderBy(d =&gt; d.Age).ThenBy(d =&gt; d.ID).ToList();
+        //8.4.4 多条件倒序
+        List listSorted = list.OrderBy(d =&gt; d.Age).ThenByDescending(d =&gt; d.ID).ToList();
+
+        listSorted.ForEach(d =&gt; Console.WriteLine(d.ToString()));
+    }
+    #endregion
+
+    #region 8.5 标准查询运算符 - Join 连接集合
+    ///
+    /// 8.5 标准查询运算符 - Join 连接集合
+    ///
+    static void TestJoin()
+    {
+        List listDog = GetDogList();
+        List listToy = GetDogToyList();
+
+        //把 Dog集合 与 Toy集合 连接生成一个新的集合
+        //连接查询                                on d.ID  =    t.DogID
+        //返回的结果是一个 匿名类集合，程序员可以手动 的控制 返回集合里 使用 联合查询两个集合 里的 的哪些属性
+        var listJoined = listDog.Join(listToy, d =&gt; d.ID, t =&gt; t.DogID, (d, t) =&gt; new { DogId = d.ID, DogName = d.Name, ToyName = t.ToyName }).ToList();
+
+        listJoined.ForEach(a =&gt; Console.WriteLine(a.ToString()) );
+        
+    } 
+    #endregion
+
+    #region 8.6 标准查询运算符 - GroupBy 为集合元素分组
+    ///
+    /// 8.6 标准查询运算符 - GroupBy 为集合元素分组
+    ///
+    static void SQOGroupBy()
+    {
+        List list = GetDogList();
+        //按照集合中 狗的 性别 分组
+        //IEnumerable&gt; it = list.GroupBy(d =&gt; d.Gender);
+        //按照集合中 狗的 姓名 分组
+        var it = list.GroupBy(d=&gt;d.Name);
+        //将 小组迭代器 转成 小组 集合
+        IList&gt; listGroup = it.ToList();
+        //遍历 小组
+        foreach (IGrouping group in listGroup)
+        {
+            //输出 小组 的 分组条件
+            Console.WriteLine("小组：" + group.Key);
+            //遍历 小组里 所有的 元素
+            foreach (C01Dog item in group)
+            {
+                Console.WriteLine(item.ToString());
+            }
+            Console.WriteLine("-----------------------------------------");
+        }
+    } 
+    #endregion
+
+    #region 8.7 标准查询运算符 - Skip + Take 分页数据
+    ///
+    /// 8.7 标准查询运算符 - Skip + Take 分页数据
+    ///
+    static void SQOPagedList()
+    {
+        List list = GetDogList().OrderBy(d =&gt; d.ID).ToList();
+        //假设 每页 2行
+
+        //获取第一页 数据
+        //var pageOne = list.Skip(0).Take(2);
+        var pageOne = GetPagedListByIndex(list,1);
+        Console.WriteLine("第一页 数据:");
+        pageOne.ForEach(i =&gt; Console.WriteLine(i.ToString()));
+
+        //获取第二页 数据
+        //var pageTwo = list.Skip(2).Take(2);
+        var pageTwo = GetPagedListByIndex(list,2);
+        Console.WriteLine("第二页 数据:");
+        pageTwo.ForEach(i =&gt; Console.WriteLine(i.ToString()));
+    }
+
+    static List GetPagedListByIndex(List list,int pageIndex)
+    {
+        int pageSize = 2;
+        return list.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+    }
+    #endregion
+
+    #region 9.0 Linq 语句
+    ///
+    /// 9.0 Linq 语句 : 编译后，会生成 对应 的 标准查询 运算符！ 所以说，Linq只是类似与sql的一种更加友好的 语法糖 语法而已。
+    ///
+    static void TestLinq()
+    {
+        List list = GetDogList();
+        List listToys = GetDogToyList();
+        //9.1 从 老集合中 查询 每一个 元素(d) 存入 新集合
+        var dogs1 = from d in list select d;
+        //9.2 where条件 从 老集合中 查询 所有 Gender = falser 的 元素，存入 新集合
+        //var dogs2 = select d from d in list where d.Gender == false ;
+        var dogs2 = from d in list where d.Gender == false select d;
+        //9.3 排序条件
+        var dogs3 = from a in list orderby a.Age orderby a.ID orderby a.Name descending select a;
+        //9.4 连接查询 注意：连接条件 使用  equals 关键字！！！
+        var joinedList = from a in list join t in listToys on a.ID equals t.DogID select new { Dog = a, Toy = t };
+        foreach (var item in joinedList)
+        {
+            Console.WriteLine(item.ToString());
+        }
+
+        Console.WriteLine("分组啦~~~-----------------------");
+        //9.5 分组查询
+        var groupList = from d in list group d by d.Gender;
+
+        foreach (var group in groupList)
+        {
+            Console.WriteLine(group.Key.ToString());
+            foreach (var item in group)
+            {
+                Console.WriteLine(item.ToString());
+            }
+        }
+
+
+        //foreach (var d in list)
+        
+    } 
+    #endregion
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

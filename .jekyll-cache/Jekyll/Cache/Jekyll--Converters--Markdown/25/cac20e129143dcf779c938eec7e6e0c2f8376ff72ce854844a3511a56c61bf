@@ -1,0 +1,6543 @@
+I"�<h3 id="一水平居中">一、水平居中</h3>
+
+<p><em>一,二,三章都是parent+son的简单结构,html代码和效果图就不贴出来了,第四章以后才有</em></p>
+
+<h5 id="1文本行内元素行内块级元素">(1)文本/行内元素/行内块级元素▲</h5>
+
+<p>原理：text-align只控制行内内容(文字、行内元素、行内块级元素)如何相对他的块父元素对齐</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>#parent{
+    text-align: center;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单快捷，容易理解，兼容性非常好</li>
+  <li>缺点：只对行内内容有效；属性会继承影响到后代行内内容；如果子元素宽度大于父元素宽度则无效，只有后代行内内容中宽度小于设置text-align属性的元素宽度的时候，才会水平居中</li>
+</ul>
+
+<h5 id="2单个块级元素">(2)单个块级元素▲</h5>
+
+<p>原理：根据<a href="https://link.juejin.im/?target=https%3A%2F%2Fwww.w3.org%2FTR%2FCSS21%2Fvisudet.html%23Computing_widths_and_margins">规范</a>介绍得很清楚了，有这么一种情况：在margin有节余的同时如果左右margin设置了auto，将会均分剩余空间。另外，如果上下的margin设置了auto，其计算值为0</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>#son{
+    width: 100px; /*必须定宽*/
+    margin: 0 auto;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单；兼容性好</li>
+  <li>缺点：必须定宽，并且值不能为auto；宽度要小于父元素，否则无效</li>
+</ul>
+
+<h5 id="3多个块级元素">(3)多个块级元素</h5>
+
+<p>原理：text-align只控制行内内容(文字、行内元素、行内块级元素)如何相对他的块父元素对齐</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>#parent{
+    text-align: center;
+}
+.son{
+    display: inline-block; /*改为行内或者行内块级形式，以达到text-align对其生效*/
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单，容易理解，兼容性非常好</li>
+  <li>缺点：只对行内内容有效；属性会继承影响到后代行内内容；块级改为inline-block换行、空格会产生元素间隔</li>
+</ul>
+
+<h5 id="4使用绝对定位实现">(4)使用绝对定位实现▲</h5>
+
+<p>原理：子绝父相，top、right、bottom、left的值是相对于父元素尺寸的，然后margin或者transform是相对于自身尺寸的，组合使用达到水平居中的目的</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>#parent{
+    height: 200px;
+    width: 200px;  /*定宽*/
+    position: relative;  /*父相*/
+    background-color: #f00;
+}
+#son{
+    position: absolute;  /*子绝*/
+    left: 50%;  /*父元素宽度一半,这里等同于left:100px*/
+    transform: translateX(-50%);  /*自身宽度一半,等同于margin-left: -50px;*/
+    width: 100px;  /*定宽*/
+    height: 100px;
+    background-color: #00ff00;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：使用margin-left兼容性好；不管是块级还是行内元素都可以实现</li>
+  <li>缺点：代码较多；脱离文档流；使用margin-left需要知道宽度值；使用transform兼容性不好（ie9+）</li>
+</ul>
+
+<h5 id="5任意个元素flex">(5)任意个元素(flex)</h5>
+
+<p>原理：就是设置当前主轴对齐方式为居中。说不上为什么，flex无非就是主轴侧轴是重点，然后就是排列方式的设置，可以去看看文末的flex阅读推荐</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>#parent{
+    display: flex;
+    justify-content: center;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：功能强大；简单方便；容易理解</li>
+  <li>缺点：PC端<a href="https://link.juejin.im/?target=https%3A%2F%2Fcaniuse.com%2F%23search%3Dflex">兼容性不好</a>，移动端（Android4.0+）</li>
+</ul>
+
+<h5 id="本章小结">本章小结：</h5>
+
+<ul>
+  <li>对于水平居中，我们应该先考虑，哪些元素有自带的居中效果，最先想到的应该就是 <code class="language-plaintext highlighter-rouge">text-align:center</code> 了，但是这个只对行内内容有效，所以我们要使用 <code class="language-plaintext highlighter-rouge">text-align:center</code> 就必须将子元素设置为 <code class="language-plaintext highlighter-rouge">display: inline;</code> 或者 <code class="language-plaintext highlighter-rouge">display: inline-block;</code> ；</li>
+  <li>其次就是考虑能不能用<code class="language-plaintext highlighter-rouge">margin: 0 auto;</code> ，因为这都是一两句代码能搞定的事，实在不行就是用绝对定位去实现了。</li>
+  <li>移动端能用flex就用flex，简单方便，灵活并且功能强大，无愧为网页布局的一大利器！</li>
+</ul>
+
+<h3 id="二垂直居中">二、垂直居中</h3>
+
+<p><em>一,二,三章都是parent+son的简单结构,html代码和效果图就不贴出来了,第四章以后才有</em></p>
+
+<h5 id="1单行文本行内元素行内块级元素">(1)单行文本/行内元素/行内块级元素▲</h5>
+
+<p>原理：line-height的最终表现是通过inline box实现的，而无论inline box所占据的高度是多少（无论比文字大还是比文字小），其占据的空间都是与文字内容公用水平中垂线的。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>#parent{
+    height: 150px;
+    line-height: 150px;  /*与height等值*/
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单；兼容性好</li>
+  <li>缺点：只能用于单行行内内容；要知道高度的值</li>
+</ul>
+
+<h5 id="2多行文本行内元素行内块级元素">(2)多行文本/行内元素/行内块级元素</h5>
+
+<p>原理同上</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>#parent{  /*或者用span把所有文字包裹起来，设置display：inline-block转换成图片的方式解决*/
+    height: 150px;
+    line-height: 30px;  /*元素在页面呈现为5行,则line-height的值为height/5*/
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单；兼容性好</li>
+  <li>缺点：只能用于行内内容；需要知道高度和最终呈现多少行来计算出line-height的值，建议用span包裹多行文本</li>
+</ul>
+
+<h5 id="3图片">(3)图片▲</h5>
+
+<p>原理：<a href="https://link.juejin.im/?target=http%3A%2F%2Fwww.zhangxinxu.com%2Fwordpress%2F2015%2F08%2Fcss-deep-understand-vertical-align-and-line-height%2F">vertical-align和line-height的基友关系</a></p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="nf">#parent</span><span class="p">{</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">150px</span><span class="p">;</span>
+    <span class="nl">line-height</span><span class="p">:</span> <span class="m">150px</span><span class="p">;</span>
+    <span class="nl">font-size</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">img</span><span class="nf">#son</span><span class="p">{</span><span class="nl">vertical-align</span><span class="p">:</span> <span class="nb">middle</span><span class="p">;}</span> <span class="c">/*默认是基线对齐，改为middle*/</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单；兼容性好</li>
+  <li>缺点：需要添加font-size: 0; 才可以完全的垂直居中；不过需要主要，html#parent包裹img之间需要有换行或空格</li>
+</ul>
+
+<h5 id="4单个块级元素">(4)单个块级元素</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>&lt;div id="parent"&gt;
+    &lt;div id="son"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h6 id="4-1-使用tabel-cell实现">(4-1) 使用tabel-cell实现:</h6>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>#parent{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单；宽高不定；兼容性好（ie8+）</li>
+  <li>缺点：设置tabl-cell的元素，宽度和高度的值设置百分比无效，需要给它的父元素设置display: table; 才生效；table-cell不感知margin，在父元素上设置table-row等属性，也会使其不感知height；设置float或position会对默认布局造成破坏，可以考虑为之增加一个父div定义float等属性；内容溢出时会自动撑开父元素</li>
+</ul>
+
+<h6 id="4-2-使用绝对定位实现">(4-2) 使用绝对定位实现:▲</h6>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre>/*原理：子绝父相，top、right、bottom、left的值是相对于父元素尺寸的，然后margin或者transform是相对于自身尺寸的，组合使用达到水平居中的目的*/
+#parent{
+    height: 150px;
+    position: relative;  /*父相*/
+}
+#son{
+    position: absolute;  /*子绝*/
+    top: 50%;  /*父元素高度一半,这里等同于top:75px;*/
+    transform: translateY(-50%);  /*自身高度一半,这里等同于margin-top:-25px;*/
+    height: 50px;
+}
+
+/*优缺点
+- 优点：使用margin-top兼容性好；不管是块级还是行内元素都可以实现
+- 缺点：代码较多；脱离文档流；使用margin-top需要知道高度值；使用transform兼容性不好（ie9+）*/
+
+或
+
+/*原理：当top、bottom为0时,margin-top&amp;bottom会无限延伸占满空间并且平分*/
+#parent{position: relative;}
+#son{
+    position: absolute;
+    margin: auto 0;
+    top: 0;
+    bottom: 0;
+    height: 50px;
+}
+
+/*优缺点
+- 优点：简单;兼容性较好(ie8+)
+- 缺点：脱离文档流*/
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h6 id="4-3-使用flex实现">(4-3) 使用flex实现:</h6>
+
+<p>原理：flex设置对齐方式罢了，请查阅文末flex阅读推荐</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>#parent{
+    display: flex;
+    align-items: center;
+}
+
+或
+
+#parent{display: flex;}
+#son{align-self: center;}
+
+或
+/*原理：这个尚未搞清楚，应该是flex使margin上下边界无限延伸至剩余空间并平分了*/
+#parent{display: flex;}
+#son{margin: auto 0;}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单灵活；功能强大</li>
+  <li>缺点：PC端<a href="https://link.juejin.im/?target=https%3A%2F%2Fcaniuse.com%2F%23search%3Dflex">兼容性不好</a>，移动端（Android4.0+）</li>
+</ul>
+
+<h5 id="5任意个元素flex-1">(5)任意个元素(flex)</h5>
+
+<p>原理：flex设置对齐方式罢了，请查阅文末flex阅读推荐</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre>#parent{
+    display: flex;
+    align-items: center;
+}
+
+或
+
+#parent{
+    display: flex;
+}
+.son{
+    align-self: center;
+}
+
+或 
+
+#parent{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单灵活；功能强大</li>
+  <li>缺点：PC端<a href="https://link.juejin.im/?target=https%3A%2F%2Fcaniuse.com%2F%23search%3Dflex">兼容性不好</a>，移动端（Android4.0+）</li>
+</ul>
+
+<h5 id="本章小结-1">★本章小结：</h5>
+
+<ul>
+  <li>对于垂直居中，最先想到的应该就是 <code class="language-plaintext highlighter-rouge">line-height</code> 了，但是这个只能用于行内内容；</li>
+  <li>其次就是考虑能不能用<code class="language-plaintext highlighter-rouge">vertical-align: middle;</code> ，不过这个一定要熟知原理才能用得顺手，建议看下<a href="https://link.juejin.im/?target=http%3A%2F%2Fwww.zhangxinxu.com%2Fwordpress%2F2015%2F08%2Fcss-deep-understand-vertical-align-and-line-height%2F">vertical-align和line-height的基友关系</a> ；</li>
+  <li>然后便是绝对定位，虽然代码多了点，但是胜在适用于不同情况；</li>
+  <li>移动端兼容性允许的情况下能用flex就用flex</li>
+</ul>
+
+<h3 id="三水平垂直居中">三、水平垂直居中</h3>
+
+<p><em>一,二,三章都是parent+son的简单结构,html代码和效果图就不贴出来了,第四章以后才有</em></p>
+
+<h5 id="1行内行内块级图片">(1)行内/行内块级/图片▲</h5>
+
+<p>原理：<code class="language-plaintext highlighter-rouge">text-align: center;</code> 控制行内内容相对于块父元素水平居中,然后就是<code class="language-plaintext highlighter-rouge">line-height</code>和<code class="language-plaintext highlighter-rouge">vertical-align</code>的基友关系使其垂直居中，<code class="language-plaintext highlighter-rouge">font-size: 0;</code> 是为了消除近似居中的bug</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>#parent{
+    height: 150px;
+    line-height: 150px;  /*行高的值与height相等*/
+    text-align: center;
+    font-size: 0;   /*消除幽灵空白节点的bug*/
+}
+#son{
+    /*display: inline-block;*/  /*如果是块级元素需改为行内或行内块级才生效*/
+    vertical-align: middle;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：代码简单；兼容性好（ie8+）</li>
+  <li>缺点：只对行内内容有效；需要添加<code class="language-plaintext highlighter-rouge">font-size: 0;</code> 才可以完全的垂直居中；不过需要注意html中#parent包裹#son之间需要有换行或空格；熟悉<code class="language-plaintext highlighter-rouge">line-height</code>和<code class="language-plaintext highlighter-rouge">vertical-align</code>的基友关系较难</li>
+</ul>
+
+<h5 id="2table-cell">(2)table-cell</h5>
+
+<p>原理：CSS Table，使表格内容垂直对齐方式为middle,然后根据是行内内容还是块级内容采取不同的方式达到水平居中</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>#parent{
+    height: 150px;
+    width: 200px;
+    display: table-cell;
+    vertical-align: middle;
+    /*text-align: center;*/   /*如果是行内元素就添加这个*/
+}
+#son{
+    /*margin: 0 auto;*/    /*如果是块级元素就添加这个*/
+    width: 100px;
+    height: 50px;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单；适用于宽度高度未知情况；兼容性好（ie8+）</li>
+  <li>缺点：设置tabl-cell的元素，宽度和高度的值设置百分比无效，需要给它的父元素设置<code class="language-plaintext highlighter-rouge">display: table;</code> 才生效；table-cell不感知margin，在父元素上设置table-row等属性，也会使其不感知height；设置float或position会对默认布局造成破坏，可以考虑为之增加一个父div定义float等属性；内容溢出时会自动撑开父元素</li>
+</ul>
+
+<h5 id="3button作为父元素">(3)button作为父元素</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>button#parent{  /*改掉button默认样式就好了,不需要居中处理*/
+    height: 150px;
+    width: 200px;
+    outline: none;  
+    border: none;
+}
+#son{
+    display: inline-block; /*button自带text-align: center,改为行内水平居中生效*/
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单方便，充分利用默认样式</li>
+  <li>缺点：只适用于行内内容；需要清除部分默认样式；水平垂直居中兼容性很好，但是ie下点击会有凹陷效果！</li>
+</ul>
+
+<h5 id="4绝对定位">(4)绝对定位</h5>
+
+<p>原理：子绝父相，top、right、bottom、left的值是相对于父元素尺寸的，然后margin或者transform是相对于自身尺寸的，组合使用达到几何上的水平垂直居中</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>#parent{
+    position: relative;
+}
+#son{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /*定宽高时等同于margin-left:负自身宽度一半;margin-top:负自身高度一半;*/
+    transform: translate(-50%,-50%); 
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：使用margin兼容性好；不管是块级还是行内元素都可以实现</li>
+  <li>缺点：代码较多；脱离文档流；使用margin需要知道宽高；使用transform兼容性不好（ie9+）</li>
+</ul>
+
+<h5 id="5绝对居中">(5)绝对居中</h5>
+
+<p>原理：当top、bottom为0时,margin-top&amp;bottom设置auto的话会无限延伸占满空间并且平分；当left、right为0时,margin-left&amp;right设置auto的话会无限延伸占满空间并且平分</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>#parent{
+    position: relative;
+}
+#son{
+    position: absolute;
+    margin: auto;
+    width: 100px;
+    height: 50px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：无需关注宽高；兼容性较好(ie8+)</li>
+  <li>缺点：代码较多；脱离文档流</li>
+</ul>
+
+<h5 id="6flex">(6)flex</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre>#parent{
+    display: flex;
+}
+#son{
+    margin: auto;
+}
+
+或
+
+#parent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+或
+
+#parent{
+    display: flex;
+    justify-content: center;
+}
+#son{
+    align-self: center;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单灵活；功能强大</li>
+  <li>缺点：PC端<a href="https://link.juejin.im/?target=https%3A%2F%2Fcaniuse.com%2F%23search%3Dflex">兼容性不好</a>，移动端（Android4.0+）</li>
+</ul>
+
+<h5 id="7视窗居中">(7)视窗居中</h5>
+
+<p>原理：vh为视口单位，视口即文档可视的部分，50vh就是视口高度的50/100，设置50vh上边距再</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>#son{
+	/*0如果去掉，则会多出滚动条并且上下都是50vh的margin。如果去掉就给body加上overflow:hidden;*/
+    margin: 50vh auto 0;  
+    transform: translateY(-50%);
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点</p>
+
+<ul>
+  <li>优点：简单；容易理解；两句代码达到屏幕水平垂直居中</li>
+  <li>缺点：兼容性不好（ie9+，Android4.4+）</li>
+</ul>
+
+<h5 id="本章小结-2">★本章小结：</h5>
+
+<ul>
+  <li>一般情况下，水平垂直居中，我们最常用的就是绝对定位加负边距了，缺点就是需要知道宽高，使用transform倒是可以不需要，但是兼容性不好（ie9+）；</li>
+  <li>其次就是绝对居中，绝对定位设置top、left、right、bottom为0，然后<code class="language-plaintext highlighter-rouge">margin:auto;</code> 让浏览器自动平分边距以达到水平垂直居中的目的；</li>
+  <li>如果是行内/行内块级/图片这些内容，可以优先考虑<code class="language-plaintext highlighter-rouge">line-height</code>和<code class="language-plaintext highlighter-rouge">vertical-align</code> 结合使用，不要忘了还有<code class="language-plaintext highlighter-rouge">text-align</code> ，这个方法代码其实不多，就是理解原理有点困难，想要熟练应对各种情况还需好好研究；</li>
+  <li>移动端兼容性允许的情况下能用flex就用flex。</li>
+</ul>
+
+<h3 id="四两列布局">四、两列布局</h3>
+
+<h4 id="41-左列定宽右列自适应">4.1 左列定宽,右列自适应</h4>
+
+<p>效果:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1129&quot; height=&quot;627&quot;&gt;&lt;/svg&gt;" alt="img" /></p>
+
+<h5 id="1利用floatmargin实现">(1)利用float+margin实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="left"&gt;左列定宽&lt;/div&gt;
+&lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/body&gt;
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>#left {
+    background-color: #f00;
+    float: left;
+    width: 100px;
+    height: 500px;
+}
+#right {
+    background-color: #0f0;
+    height: 500px;
+    margin-left: 100px; /*大于等于#left的宽度*/
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="2利用floatmarginfix实现">(2)利用float+margin(fix)实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="left"&gt;左列定宽&lt;/div&gt;
+&lt;div id="right-fix"&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre>#left {
+    background-color: #f00;
+    float: left;
+    width: 100px;
+    height: 500px;
+}
+#right-fix {
+    float: right;
+    width: 100%;
+    margin-left: -100px; /*正值大于或等于#left的宽度,才能显示在同一行*/
+}
+#right{
+    margin-left: 100px; /*大于或等于#left的宽度*/
+    background-color: #0f0;
+    height: 500px;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="3使用floatoverflow实现">(3)使用float+overflow实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="left"&gt;左列定宽&lt;/div&gt;
+&lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/body&gt;
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>#left {
+    background-color: #f00;
+    float: left;
+    width: 100px;
+    height: 500px;
+}
+#right {
+    background-color: #0f0;
+    height: 500px;
+    overflow: hidden; /*触发bfc达到自适应*/
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解，无需关注定宽的宽度，利用bfc达到自适应效果</li>
+  <li>缺点：浮动脱离文档流，需要手动清除浮动，否则会产生高度塌陷；不支持ie6</li>
+</ul>
+
+<h5 id="4使用table实现">(4)使用table实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre>#parent{
+    width: 100%;
+    display: table;
+    height: 500px;
+}
+#left {
+    width: 100px;
+    background-color: #f00;
+}
+#right {
+    background-color: #0f0;
+}
+#left,#right{
+    display: table-cell;  /*利用单元格自动分配宽度*/
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解，无需关注定宽的宽度，利用单元格自动分配达到自适应效果</li>
+  <li>缺点：margin失效；设置间隔比较麻烦；不支持ie8-</li>
+</ul>
+
+<h5 id="5使用绝对定位实现">(5)使用绝对定位实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre>#parent{
+    position: relative;  /*子绝父相*/
+}
+#left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #f00;
+    width: 100px;
+    height: 500px;
+}
+#right {
+    position: absolute;
+    top: 0;
+    left: 100px;  /*值大于等于#left的宽度*/
+    right: 0;
+    background-color: #0f0;
+    height: 500px;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="6使用flex实现">(6)使用flex实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>#parent{
+    width: 100%;
+    height: 500px;
+    display: flex;
+}
+#left {
+    width: 100px;
+    background-color: #f00;
+}
+#right {
+    flex: 1; /*均分了父元素剩余空间*/
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="7使用grid实现">(7)使用Grid实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>#parent {
+    width: 100%;
+    height: 500px;
+    display: grid;
+    grid-template-columns: 100px auto;  /*设定2列就ok了,auto换成1fr也行*/
+}
+#left {
+    background-color: #f00;
+}
+#right {
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="42-左列自适应右列定宽">4.2 左列自适应,右列定宽</h4>
+
+<p>效果:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1102&quot; height=&quot;728&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<h5 id="1使用floatmargin实现">(1)使用float+margin实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列自适应&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre>#parent{
+    height: 500px;
+    padding-left: 100px;  /*抵消#left的margin-left以达到#parent水平居中*/
+}
+#left {
+    width: 100%;
+    height: 500px;
+    float: left;
+    margin-left: -100px; /*正值等于#right的宽度*/
+    background-color: #f00;
+}
+#right {
+    height: 500px;
+    width: 100px;
+    float: right;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="2使用floatoverflow实现">(2)使用float+overflow实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+    &lt;div id="left"&gt;左列自适应&lt;/div&gt;   &lt;!--顺序要换一下--&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>#left {
+    overflow: hidden;  /*触发bfc*/
+    height: 500px;
+    background-color: #f00;
+}
+#right {
+    margin-left: 10px;  /*margin需要定义在#right中*/
+    float: right;
+    width: 100px;
+    height: 500px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解，无需关注定宽的宽度，利用bfc达到自适应效果</li>
+  <li>缺点：浮动脱离文档流，需要手动清除浮动，否则会产生高度塌陷；不支持ie6</li>
+</ul>
+
+<h5 id="3使用table实现">(3)使用table实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列自适应&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre>#parent{
+    width: 100%;
+    height: 500px;
+    display: table;
+}
+#left {
+    background-color: #f00;
+    display: table-cell;
+}
+#right {
+    width: 100px;
+    background-color: #0f0;
+    display: table-cell;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解，无需关注定宽的宽度，利用单元格自动分配达到自适应效果</li>
+  <li>缺点：margin失效；设置间隔比较麻烦；不支持ie8-</li>
+</ul>
+
+<h5 id="4使用绝对定位实现-1">(4)使用绝对定位实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列自适应&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre>#parent{
+    position: relative;  /*子绝父相*/
+}
+#left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 100px;  /*大于等于#rigth的宽度*/
+    background-color: #f00;
+    height: 500px;
+}
+#right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #0f0;
+    width: 100px;
+    height: 500px;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="5使用flex实现">(5)使用flex实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列自适应&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>#parent{
+    height: 500px;
+    display: flex;
+}
+#left {
+    flex: 1;
+    background-color: #f00;
+}
+#right {
+    width: 100px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="6使用grid实现">(6)使用Grid实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列自适应&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 500px;
+    display: grid;
+    grid-template-columns: auto 100px;  /*设定2列,auto换成1fr也行*/
+}
+#left {
+    background-color: #f00;
+}
+#right {
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="43-一列不定一列自适应">4.3 一列不定,一列自适应</h4>
+
+<p>(盒子宽度随着内容增加或减少发生变化,另一个盒子自适应)</p>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1102&quot; height=&quot;732&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>变化后:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1102&quot; height=&quot;728&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<h5 id="1使用floatoverflow实现">(1)使用float+overflow实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列不定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>#left {
+    margin-right: 10px;
+    float: left;  /*只设置浮动,不设宽度*/
+    height: 500px;
+    background-color: #f00;
+}
+#right {
+    overflow: hidden;  /*触发bfc*/
+    height: 500px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解，无需关注宽度，利用bfc达到自适应效果</li>
+  <li>缺点：浮动脱离文档流，需要手动清除浮动，否则会产生高度塌陷；不支持ie6</li>
+</ul>
+
+<h5 id="2使用flex实现">(2)使用flex实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列不定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>#parent{
+    display: flex;
+}
+#left { /*不设宽度*/
+    margin-right: 10px;
+    height: 500px;
+    background-color: #f00;
+}
+#right {
+    height: 500px;
+    background-color: #0f0;
+    flex: 1;  /*均分#parent剩余的部分*/
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="3使用grid实现">(3)使用Grid实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列不定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>#parent{
+    display: grid;
+    grid-template-columns: auto 1fr;  /*auto和1fr换一下顺序就是左列自适应,右列不定宽了*/
+}
+#left {
+    margin-right: 10px;
+    height: 500px;
+    background-color: #f00;
+}
+#right {
+    height: 500px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><em>左列自适应,右列不定宽同理(参考4.1和4.3对应代码示例)</em></p>
+
+<h3 id="五三列布局">五、三列布局</h3>
+
+<h4 id="51-两列定宽一列自适应">5.1 两列定宽,一列自适应</h4>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1102&quot; height=&quot;732&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<h5 id="1使用floatmargin实现-1">(1)使用float+margin实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="center"&gt;中间定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre>#parent{
+    min-width: 310px; /*100+10+200,防止宽度不够,子元素换行*/
+}
+#left {
+    margin-right: 10px;  /*#left和#center间隔*/
+    float: left;
+    width: 100px;
+    height: 500px;
+    background-color: #f00;
+}
+#center{
+    float: left;
+    width: 200px;
+    height: 500px;
+    background-color: #eeff2b;
+}
+#right {
+    margin-left: 320px;  /*等于#left和#center的宽度之和加上间隔,多出来的就是#right和#center的间隔*/
+    height: 500px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="2使用floatoverflow实现-1">(2)使用float+overflow实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="center"&gt;中间定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre>#parent{
+    min-width: 320px; /*100+10+200+20,防止宽度不够,子元素换行*/
+}
+#left {
+    margin-right: 10px; /*间隔*/
+    float: left;
+    width: 100px;
+    height: 500px;
+    background-color: #f00;
+}
+#center{
+    margin-right: 10px; /*在此定义和#right的间隔*/
+    float: left;
+    width: 200px;
+    height: 500px;
+    background-color: #eeff2b;
+}
+#right {
+    overflow: hidden;  /*触发bfc*/
+    height: 500px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解，无需关注定宽的宽度，利用bfc达到自适应效果</li>
+  <li>缺点：浮动脱离文档流，需要手动清除浮动，否则会产生高度塌陷；不支持ie6</li>
+</ul>
+
+<h5 id="3使用table实现-1">(3)使用table实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="center"&gt;中间定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre>#parent {
+    width: 100%; 
+    height: 520px; /*抵消上下间距10*2的高度影响*/
+    margin: -10px 0;  /*抵消上下边间距10的位置影响*/
+    display: table;
+    /*左右两边间距大了一点,子元素改用padding设置盒子间距就没有这个问题*/
+    border-spacing: 10px;  /*关键!!!设置间距*/
+}
+#left {
+    display: table-cell;
+    width: 100px;
+    background-color: #f00;
+}
+#center {
+    display: table-cell;
+    width: 200px;
+    background-color: #eeff2b;
+}
+#right {
+    display: table-cell;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解，无需关注定宽的宽度，利用单元格自动分配达到自适应效果</li>
+  <li>缺点：margin失效；设置间隔比较麻烦；不支持ie8-</li>
+</ul>
+
+<h5 id="4使用flex实现">(4)使用flex实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="center"&gt;中间定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 500px;
+    display: flex;
+}
+#left {
+    margin-right: 10px;  /*间距*/
+    width: 100px;
+    background-color: #f00;
+}
+#center {
+    margin-right: 10px;  /*间距*/
+    width: 200px;
+    background-color: #eeff2b;
+}
+#right {
+    flex: 1;  /*均分#parent剩余的部分达到自适应*/
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="5使用grid实现">(5)使用Grid实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="center"&gt;中间定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列自适应&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 500px;
+    display: grid;
+    grid-template-columns: 100px 200px auto; /*设置3列,固定第一第二列的宽度,第三列auto或者1fr*/
+}
+#left {
+    margin-right: 10px;  /*间距*/
+    background-color: #f00;
+}
+#center {
+    margin-right: 10px;  /*间距*/
+    background-color: #eeff2b;
+}
+#right {
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="52-两侧定宽中间自适应">5.2 两侧定宽,中间自适应</h4>
+
+<h5 id="521-双飞翼布局方法">5.2.1 双飞翼布局方法</h5>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1199&quot; height=&quot;731&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="header"&gt;&lt;/div&gt;
+&lt;!--中间栏需要放在前面--&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="center"&gt;
+        &lt;div id="center_inbox"&gt;中间自适应&lt;/div&gt;
+        &lt;hr&gt;  &lt;!--方便观察原理--&gt;
+    &lt;/div&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id="footer"&gt;&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre></td><td class="rouge-code"><pre>#header {
+    height: 60px;
+    background-color: #ccc;
+}
+#left {
+    float: left;
+    width: 100px;
+    height: 500px;
+    margin-left: -100%; /*调整#left的位置,值等于自身宽度*/
+    background-color: #f00;
+    opacity: 0.5;
+}
+#center {
+    height: 500px;
+    float: left;
+    width: 100%;
+    background-color: #eeff2b;
+}
+#center_inbox{
+    height: 480px;
+    border: 1px solid #000;
+    margin: 0 220px 0 120px;  /*关键!!!左右边界等于左右盒子的宽度,多出来的为盒子间隔*/
+}
+#right {
+    float: left;
+    width: 200px;
+    height: 500px;
+    margin-left: -200px;  /*使right到指定的位置,值等于自身宽度*/
+    background-color: #0f0;
+    opacity: 0.5;
+}
+#footer {
+    clear: both;  /*注意清除浮动!!*/
+    height: 60px;
+    background-color: #ccc;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="522-圣杯布局方法">5.2.2 圣杯布局方法</h5>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1115&quot; height=&quot;732&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="header"&gt;&lt;/div&gt;
+&lt;div id="parent"&gt;
+    &lt;!--#center需要放在前面--&gt;
+    &lt;div id="center"&gt;中间自适应
+        &lt;hr&gt;
+    &lt;/div&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id="footer"&gt;&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+</pre></td><td class="rouge-code"><pre>#header{
+    height: 60px;
+    background-color: #ccc;
+}
+#parent {
+    box-sizing: border-box;
+    height: 500px;
+    padding: 0 215px 0 115px;  /*为了使#center摆正,左右padding分别等于左右盒子的宽,可以结合左右盒子相对定位的left调整间距*/
+}
+#left {
+    margin-left: -100%;  /*使#left上去一行*/
+    position: relative;
+    left: -115px;  /*相对定位调整#left的位置,正值大于或等于自身宽度*/
+    float: left;
+    width: 100px;
+    height: 500px;
+    background-color: #f00;
+    opacity: 0.5;
+}
+#center {
+    float: left;
+    width: 100%;  /*由于#parent的padding,达到自适应的目的*/
+    height: 500px;
+    box-sizing: border-box;
+    border: 1px solid #000;
+    background-color: #eeff2b;
+}
+#right {
+    position: relative;
+    left: 215px; /*相对定位调整#right的位置,大于或等于自身宽度*/
+    width: 200px;
+    height: 500px;
+    margin-left: -200px;  /*使#right上去一行*/
+    float: left;
+    background-color: #0f0;
+    opacity: 0.5;
+}
+#footer{
+    height: 60px;
+    background-color: #ccc;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="523-使用grid实现">5.2.3 使用Grid实现</h5>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1051&quot; height=&quot;731&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="header"&gt;&lt;/div&gt;
+    &lt;!--#center需要放在前面--&gt;
+    &lt;div id="center"&gt;中间自适应
+        &lt;hr&gt;
+    &lt;/div&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+    &lt;div id="footer"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 500px;
+    display: grid;
+    grid-template-columns: 100px auto 200px; /*设定3列*/
+    grid-template-rows: 60px auto 60px; /*设定3行*/
+    /*设置网格区域分布*/
+    grid-template-areas: 
+        "header header header" 
+        "leftside main rightside" 
+        "footer footer footer";
+}
+#header {
+    grid-area: header; /*指定在哪个网格区域*/
+    background-color: #ccc;
+}
+#left {
+    grid-area: leftside;
+    background-color: #f00;
+    opacity: 0.5;
+}
+#center {
+    grid-area: main; /*指定在哪个网格区域*/
+    margin: 0 15px; /*设置间隔*/
+    border: 1px solid #000;
+    background-color: #eeff2b;
+}
+#right {
+    grid-area: rightside; /*指定在哪个网格区域*/
+    background-color: #0f0;
+    opacity: 0.5;
+}
+#footer {
+    grid-area: footer; /*指定在哪个网格区域*/
+    background-color: #ccc;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="524-其他方法">5.2.4 其他方法</h5>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1140&quot; height=&quot;735&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<h5 id="1使用table实现">(1)使用table实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="center"&gt;中间自适应&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre>#parent {
+    width: 100%;
+    height: 500px;
+    display: table;
+}
+#left {
+    display: table-cell;
+    width: 100px;
+    background-color: #f00;
+}
+#center {
+    display: table-cell;
+    background-color: #eeff2b;
+}
+#right {
+    display: table-cell;
+    width: 200px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简洁，容易理解；</li>
+  <li>缺点：margin失效，采用border-spacing表格两边的间隔无法消除；不支持ie8-</li>
+</ul>
+
+<h5 id="2使用flex实现-1">(2)使用flex实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="center"&gt;中间自适应&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 500px;
+    display: flex;
+}
+#left {
+    width: 100px;
+    background-color: #f00;
+}
+#center {
+    flex: 1;  /*均分#parent剩余的部分*/
+    background-color: #eeff2b;
+}
+#right {
+    width: 200px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="3使用position实现">(3)使用position实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="left"&gt;左列定宽&lt;/div&gt;
+    &lt;div id="center"&gt;中间自适应&lt;/div&gt;
+    &lt;div id="right"&gt;右列定宽&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+</pre></td><td class="rouge-code"><pre>#parent {
+    position: relative; /*子绝父相*/
+}
+#left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 500px;
+    background-color: #f00;
+}
+#center {
+    height: 500px;
+    margin-left: 100px; /*大于等于#left的宽度,或者给#parent添加同样大小的padding-left*/
+    margin-right: 200px;  /*大于等于#right的宽度,或者给#parent添加同样大小的padding-right*/
+    background-color: #eeff2b;
+}
+#right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 500px;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：容易理解，兼容性比较好</li>
+  <li>缺点：需手动计算宽度确定边距；脱离文档流；代码繁多</li>
+</ul>
+
+<h3 id="六多列布局">六、多列布局</h3>
+
+<h4 id="61-等宽布局">6.1 等宽布局</h4>
+
+<h5 id="611-四列等宽">6.1.1 四列等宽</h5>
+
+<h5 id="1使用float实现">(1)使用float实现</h5>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1086&quot; height=&quot;730&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="column"&gt;1 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;2 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;3 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;4 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre>#parent {
+    margin-left: -20px; /*使整体内容看起来居中,抵消padding-left的影响*/
+}
+.column{
+    padding-left: 20px;  /*盒子的边距*/
+    width: 25%;
+    float: left;
+    box-sizing: border-box;
+    border: 1px solid #000;
+    background-clip: content-box; /*背景色从内容开始绘制,方便观察*/
+    height: 500px;
+}
+.column:nth-child(odd){
+    background-color: #f00;
+}
+.column:nth-child(even){
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解；兼容性较好</li>
+  <li>缺点：需要手动清除浮动，否则会产生高度塌陷</li>
+</ul>
+
+<h5 id="2使用table实现">(2)使用table实现</h5>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1086&quot; height=&quot;730&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="column"&gt;1 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;2 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;3 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;4 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 540px;  /*抵消上下边20*2间距的高度影响*/
+    display: table;
+    margin: -20px 0;  /*抵消上下边20*2间距的位置影响*/
+    /*两边离页面间距较大,改用子元素设置padding来当成间隔就不会有这样的问题*/
+    border-spacing: 20px;  /*设置间距*/
+}
+.column{
+    display: table-cell;
+}
+.column:nth-child(odd){
+    background-color: #f00;
+}
+.column:nth-child(even){
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解；无需关注宽度，单元格自动等分</li>
+  <li>缺点：margin失效；设置间隔比较麻烦；不支持ie8-</li>
+</ul>
+
+<h5 id="3使用flex实现">(3)使用flex实现</h5>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1106&quot; height=&quot;732&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="column"&gt;1 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;2 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;3 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;4 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre>#parent {
+    margin-left: -15px;  /*使内容看起来居中*/
+    height: 500px;
+    display: flex;
+}
+.column{
+    flex: 1; /*一起平分#parent*/
+    margin-left: 15px; /*设置间距*/
+}
+.column:nth-child(odd){
+    background-color: #f00;
+}
+.column:nth-child(even){
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="多列等宽">多列等宽</h5>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1051&quot; height=&quot;732&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<h5 id="1使用float实现-1">(1)使用float实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="column"&gt;1 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;2 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;3 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;4 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;5 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;6 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 500px;
+}
+.column{
+    float: left;  /*添加浮动*/
+    width: 16.66666666666667%;  /*100÷列数,得出百分比*/
+    height: 500px;
+}
+.column:nth-child(odd){
+    background-color: #f00;
+}
+.column:nth-child(even){
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解；兼容性较好</li>
+  <li>缺点：需要手动清除浮动，否则会产生高度塌陷</li>
+</ul>
+
+<h5 id="2使用table实现-1">(2)使用table实现</h5>
+
+<p>html代码</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="column"&gt;1 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;2 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;3 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;4 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;5 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;6 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre>#parent {
+    width: 100%;
+    height: 500px;
+    display: table;
+}
+.column{
+    display: table-cell; /*无需关注列数,单元格自动平分*/
+}
+.column:nth-child(odd){
+    background-color: #f00;
+}
+.column:nth-child(even){
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简单，容易理解；无需关注宽度。单元格自动等分</li>
+  <li>缺点：margin失效；设置间隔比较麻烦；不兼容ie8-</li>
+</ul>
+
+<h5 id="3使用flex实现-1">(3)使用flex实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="column"&gt;1 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;2 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;3 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;4 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;5 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;6 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 500px;
+    display: flex;
+}
+.column{
+    flex: 1;  /*无需关注列数,一起平分#parent*/
+}
+.column:nth-child(odd){
+    background-color: #f00;
+}
+.column:nth-child(even){
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="4使用grid实现">(4)使用Grid实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="column"&gt;1 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;2 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;3 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;4 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;5 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="column"&gt;6 &lt;p&gt;我是文字我是文字我输文字我是文字我是文字&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>#parent {
+    height: 500px;
+    display: grid;
+    grid-template-columns: repeat(6,1fr);  /*6就是列数*/
+}
+.column{}
+.column:nth-child(odd){
+    background-color: #f00;
+}
+.column:nth-child(even){
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="62-九宫格布局">6.2 九宫格布局</h4>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1240&quot; height=&quot;636&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<h5 id="1使用table实现-1">(1)使用table实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="item"&gt;1&lt;/div&gt;
+        &lt;div class="item"&gt;2&lt;/div&gt;
+        &lt;div class="item"&gt;3&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="item"&gt;4&lt;/div&gt;
+        &lt;div class="item"&gt;5&lt;/div&gt;
+        &lt;div class="item"&gt;6&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="item"&gt;7&lt;/div&gt;
+        &lt;div class="item"&gt;8&lt;/div&gt;
+        &lt;div class="item"&gt;9&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>#parent {
+    width: 1200px;
+    height: 500px;
+    margin: 0 auto;
+    display: table;
+}
+.row {
+    display: table-row;
+}
+.item {
+    border: 1px solid #000;
+    display: table-cell;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简洁，容易理解；</li>
+  <li>缺点：margin失效，采用border-spacing表格两边的间隔无法消除；不支持ie8-</li>
+</ul>
+
+<h5 id="2使用flex实现-2">(2)使用flex实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="item"&gt;1&lt;/div&gt;
+        &lt;div class="item"&gt;2&lt;/div&gt;
+        &lt;div class="item"&gt;3&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="item"&gt;4&lt;/div&gt;
+        &lt;div class="item"&gt;5&lt;/div&gt;
+        &lt;div class="item"&gt;6&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="row"&gt;
+        &lt;div class="item"&gt;7&lt;/div&gt;
+        &lt;div class="item"&gt;8&lt;/div&gt;
+        &lt;div class="item"&gt;9&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre>#parent {
+    width: 1200px;
+    height: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+.row {
+    display: flex;
+    flex: 1;
+}
+.item {
+    flex: 1;
+    border: 1px solid #000;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="3使用grid实现-1">(3)使用Grid实现</h5>
+
+<p><em>CSS Grid非常强大,可以实现各种各样的三维布局,可查阅本文结尾的阅读推荐</em></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div class="item"&gt;1&lt;/div&gt;
+    &lt;div class="item"&gt;2&lt;/div&gt;
+    &lt;div class="item"&gt;3&lt;/div&gt;
+    &lt;div class="item"&gt;4&lt;/div&gt;
+    &lt;div class="item"&gt;5&lt;/div&gt;
+    &lt;div class="item"&gt;6&lt;/div&gt;
+    &lt;div class="item"&gt;7&lt;/div&gt;
+    &lt;div class="item"&gt;8&lt;/div&gt;
+    &lt;div class="item"&gt;9&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>#parent {
+    width: 1200px;
+    height: 500px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /*等同于1fr 1fr 1fr,此为重复的合并写法*/
+    grid-template-rows: repeat(3, 1fr);  /*等同于1fr 1fr 1fr,此为重复的合并写法*/
+}
+.item {
+    border: 1px solid #000;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="63-栅格系统">6.3 栅格系统</h4>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：代码简洁，容易理解；提高页面内容的流动性，能适应多种设备；</li>
+</ul>
+
+<h5 id="1用less生成">(1)用Less生成</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+</pre></td><td class="rouge-code"><pre>/*生成栅格系统*/
+@media screen and (max-width: 768px){
+  .generate-columns(12);     /*此处设置生成列数*/
+  .generate-columns(@n, @i: 1) when (@i &lt;= @n) {
+    .column-xs-@{i} {
+      width: (@i * 100% / @n);
+    }
+    .generate-columns(@n, (@i+1));
+  }
+}
+@media screen and (min-width: 768px){
+  .generate-columns(12);    /*此处设置生成列数*/
+  .generate-columns(@n, @i: 1) when (@i &lt;= @n) {
+    .column-sm-@{i} {
+      width: (@i * 100% / @n);
+    }
+    .generate-columns(@n, (@i+1));
+  }
+}
+div[class^="column-xs-"]{
+	float: left;
+}
+div[class^="column-sm-"]{
+	float: left;
+}
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>编译后的CSS代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+</pre></td><td class="rouge-code"><pre>@media screen and (max-width: 768px) {
+  .column-xs-1 {  width: 8.33333333%;  }
+  .column-xs-2 {  width: 16.66666667%;  }
+  .column-xs-3 {  width: 25%;  }
+  .column-xs-4 {  width: 33.33333333%;  }
+  .column-xs-5 {  width: 41.66666667%;  }
+  .column-xs-6 {  width: 50%;  }
+  .column-xs-7 {  width: 58.33333333%;  }
+  .column-xs-8 {  width: 66.66666667%;  }
+  .column-xs-9 {  width: 75%;  }
+  .column-xs-10 {  width: 83.33333333%;  }
+  .column-xs-11 {  width: 91.66666667%;  }
+  .column-xs-12 {  width: 100%;  }
+}
+@media screen and (min-width: 768px) {
+  .column-sm-1 {  width: 8.33333333%;  }
+  .column-sm-2 {  width: 16.66666667%;  }
+  .column-sm-3 {  width: 25%;  }
+  .column-sm-4 {  width: 33.33333333%;  }
+  .column-sm-5 {  width: 41.66666667%;  }
+  .column-sm-6 {  width: 50%;  }
+  .column-sm-7 {  width: 58.33333333%;  }
+  .column-sm-8 {  width: 66.66666667%;  }
+  .column-sm-9 {  width: 75%;  }
+  .column-sm-10 {  width: 83.33333333%;  }
+  .column-sm-11 {  width: 91.66666667%;  }  
+  .column-sm-12 {  width: 100%;  }
+}
+div[class^="column-xs-"]{
+	float: left;
+}
+div[class^="column-sm-"]{
+	float: left;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="七全屏布局">七、全屏布局</h3>
+
+<p>效果图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1237&quot; height=&quot;726&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<h5 id="1使用绝对定位实现">(1)使用绝对定位实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="top"&gt;top&lt;/div&gt;
+    &lt;div id="left"&gt;left&lt;/div&gt;
+    &lt;div id="right"&gt;right&lt;/div&gt;
+    &lt;div id="bottom"&gt;bottom&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+</pre></td><td class="rouge-code"><pre>html, body, #parent {height: 100%;overflow: hidden;}
+#parent &gt; div {
+    border: 1px solid #000;
+}
+#top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+}
+#left {
+    position: absolute;
+    top: 100px;  /*值大于等于#top的高度*/
+    left: 0;
+    bottom: 50px;  /*值大于等于#bottom的高度*/
+    width: 200px;
+}
+#right {
+    position: absolute;
+    overflow: auto;
+    left: 200px;  /*值大于等于#left的宽度*/
+    right: 0;
+    top: 100px;  /*值大于等于#top的高度*/
+    bottom: 50px;  /*值大于等于#bottom的高度*/
+}
+#bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50px;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>优缺点：</p>
+
+<ul>
+  <li>优点：容易理解</li>
+  <li>缺点：代码繁多；需要计算好各个盒子的宽高；</li>
+</ul>
+
+<h5 id="2使用flex实现-3">(2)使用flex实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="top"&gt;top&lt;/div&gt;
+    &lt;div id="middle"&gt;
+        &lt;div id="left"&gt;left&lt;/div&gt;
+        &lt;div id="right"&gt;right&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id="bottom"&gt;bottom&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="rouge-code"><pre>*{
+    margin: 0;
+    padding: 0;
+}
+html,body,#parent{
+    height:100%;
+}
+#parent {
+    display: flex;
+    flex-direction: column;
+}
+#top {
+    height: 100px;
+}
+#bottom {
+    height: 50px;
+}
+#middle {
+    flex: 1;
+    display: flex;
+}
+#left {
+    width: 200px;
+}
+#right {
+    flex: 1;
+    overflow: auto;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="3使用grid实现-2">(3)使用Grid实现</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div id="parent"&gt;
+    &lt;div id="top"&gt;top&lt;/div&gt;
+    &lt;div id="left"&gt;left&lt;/div&gt;
+    &lt;div id="right"&gt;right&lt;/div&gt;
+    &lt;div id="bottom"&gt;bottom&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre></td><td class="rouge-code"><pre>*{
+    margin: 0;
+    padding: 0;
+}
+html, body, #parent {
+    height: 100%;
+}
+#parent {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    /*分成2列,第一列宽度200px,第二列1fr平分剩余的部分,此处换成auto也行*/
+    grid-template-columns: 200px 1fr;  
+    /*分成3行,第一行高度100px,第二行auto为自适应,此处换成1fr也行,第3行高度为50px*/
+    grid-template-rows: 100px auto 50px; 
+    /*定义网格区域分布*/
+    grid-template-areas:
+        "header header"
+        "aside main"
+        "footer footer";
+}
+#parent&gt;div{
+    border: 1px solid #000;
+}
+#top{
+    grid-area: header;  /*指定在哪个网格区域*/
+}
+#left{
+    grid-area: aside;  /*指定在哪个网格区域*/
+}
+#right{
+    grid-area: main;  /*指定在哪个网格区域*/
+}
+#bottom{
+    grid-area: footer;  /*指定在哪个网格区域*/
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="八网站实例布局分析">八、网站实例布局分析：</h3>
+
+<p>由于方法众多,分析的时候想到哪种用哪种了，只要IE9和谷歌上表现一致，我就不一一测试其他浏览器了，如果有什么问题或意见，请留言！</p>
+
+<h4 id="81-小米官网">8.1 小米官网</h4>
+
+<p>https://www.mi.com/</p>
+
+<h5 id="811-兼容ie9的方法">8.1.1 兼容IE9+的方法</h5>
+
+<h5 id="1页面整体">(1)页面整体</h5>
+
+<p>整个页面我们可以分成顶、上、中、下、底五个结构,如图所示:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;316&quot; height=&quot;1280&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div class="header"&gt;&lt;/div&gt;
+&lt;div class="top"&gt;&lt;/div&gt;
+&lt;div class="center"&gt;&lt;/div&gt;
+&lt;div class="bottom"&gt;&lt;/div&gt;
+&lt;div class="footer"&gt;&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+</pre></td><td class="rouge-code"><pre>*{  /*为了方便,就这样清空默认样式了*/
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+}
+body{
+    background-color: #f5f5f5;
+}
+.header{
+    margin-bottom: 20px;
+    height: 40px;
+    background-color: #333;
+}
+.top{
+    height: 1210px;
+    background-color: #fff;
+}
+.center{
+    width: 1226px;
+    margin: 0 auto;
+    margin-bottom: 60px;
+    height: 1791px;
+    background-color: #fff;
+}
+.bottom{
+    height: 274px;
+    background-color: #fff;
+}
+.footer{
+    margin: 0 auto;
+    width: 1226px;
+    height: 166px;
+    border: 1px solid #000;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="2局部header">(2)局部——header</h5>
+
+<p>header部分首先是一个水平居中的内容，内容盒子可以分成左右两个部分，如图所示：</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1240&quot; height=&quot;42&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>&lt;div class="header"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="header-left"&gt;&lt;/div&gt;
+        &lt;div class="header-rigth"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre>.container{  /*后面会继续用到*/
+    width: 1226px;
+    height: 100%;
+    margin: 0 auto;
+    border: 1px solid #f00;
+}
+.header-left{
+    width: 380px;
+    height: 100%;
+    float: left;
+    background-color: #0f0;
+}
+.header-rigth{
+    width: 260px;
+    height: 100%;
+    float: right;
+    background-color: #0f0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="3局部top">(3)局部——top</h5>
+
+<p>top部分先有一个水平居中的内容，再就是内容由上到下可以分成四个部分，然后每个部分再细分……说不下去了，直接上图：</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1240&quot; height=&quot;755&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre>&lt;div class="top"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="top-nav"&gt;&lt;/div&gt;
+        &lt;div class="top-slider"&gt;
+            &lt;div class="slider-navbar"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="top-recommend"&gt;
+            &lt;div class="recommend-left"&gt;&lt;/div&gt;
+            &lt;div class="recommend-right"&gt;
+                &lt;ul&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                &lt;/ul&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="top-flashsale"&gt;
+            &lt;div class="flashsale-title"&gt;&lt;/div&gt;
+            &lt;div class="flashsale-content"&gt;
+                &lt;div class="content-timer"&gt;&lt;/div&gt;
+                &lt;ul class="content-shops"&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                &lt;/ul&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+</pre></td><td class="rouge-code"><pre>.top {
+    height: 1210px;
+    background-color: #fff;
+}
+.top-nav {
+    height: 100px;
+    background-color: #f00;
+}
+.top-slider {
+    margin-bottom: 14px;
+    position: relative;
+    height: 460px;
+    background-color: #00f;
+}
+.slider-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 234px;
+    height: 100%;
+    background-color: black;
+    opacity: .5;
+}
+.top-recommend {
+    margin-bottom: 26px;
+    height: 170px;
+    background-color: #0f0;
+}
+.recommend-left {
+    float: left;
+    height: 100%;
+    width: 234px;
+    background-color: skyblue;
+}
+.recommend-right {
+    float: right;
+    width: 978px;
+    height: 100%;
+    border: 1px solid #000;
+}
+.recommend-right &gt; ul {
+    height: 100%;
+}
+.recommend-right &gt; ul li {
+    float: left;
+    width: 316px;
+    height: 100%;
+    background-color: deepskyblue;
+}
+.recommend-right &gt; ul li + li {
+    margin-left: 14px;
+}
+.top-flashsale {
+    height: 438px;
+    background-color: #ff4455;
+}
+.flashsale-title {
+    height: 58px;
+    background-color: purple;
+}
+.flashsale-content {
+    border: 1px solid #000;
+    padding-bottom: 40px;
+    height: 380px;
+}
+.content-timer {
+    margin-right: 14px;
+    float: left;
+    width: 234px;
+    height: 100%;
+    background-color: #fff;
+}
+.content-shops {
+    overflow: hidden;
+    height: 100%;
+    background-color: #6effb1;
+}
+.content-shops &gt; li {
+    float: left;
+    width: 234px;
+    height: 100%;
+    background-color: #fff;
+}
+.content-shops &gt; li+li {
+    margin-left: 12.5px;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="4局部center">(4)局部——center</h5>
+
+<p>center部分都是一些单元格展示,有很多类似的模块,就挑几个来实现了，直接看图吧：</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1103&quot; height=&quot;602&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1233&quot; height=&quot;687&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1240&quot; height=&quot;358&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+</pre></td><td class="rouge-code"><pre>&lt;div class="center"&gt;
+    &lt;div class="center-phone"&gt;
+        &lt;div class="phone-title"&gt;&lt;/div&gt;
+        &lt;div class="phone-content"&gt;
+            &lt;div class="phone-left"&gt;&lt;/div&gt;
+            &lt;ul class="phone-right"&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="center-household"&gt;
+        &lt;div class="household-title"&gt;&lt;/div&gt;
+        &lt;div class="household-content"&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;
+                &lt;p&gt;&lt;/p&gt;
+                &lt;p&gt;&lt;/p&gt;
+            &lt;/li&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="center-video"&gt;
+        &lt;div class="video-title"&gt;&lt;/div&gt;
+        &lt;ul class="video-content"&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+</pre></td><td class="rouge-code"><pre>.center {
+    margin: 0 auto;
+    margin-bottom: 60px;
+    padding-top: 60px;
+    width: 1226px;
+    height: 1791px;
+    background-color: #fff;
+}
+.center-phone{
+    margin-bottom: 8px;
+    height: 686px;
+    background-color: yellow;
+}
+.phone-title{
+    height: 58px;
+    background-color: black;
+}
+.phone-content{
+    height: 628px;
+    background-color: pink;
+}
+.phone-left{
+    margin-right: 14px;
+    float: left;
+    width: 234px;
+    height: 100%;
+    background-color: darkseagreen;
+}
+.phone-right{
+    overflow: hidden;
+    height: 100%;
+    background-color: #ccc;
+}
+.phone-right&gt;li{
+    margin-bottom: 28px;
+    padding-left: 14px;
+    float: left;
+    width: 25%;
+    height: 300px;
+    border: 1px solid #000;
+    background-color: #f00;
+    background-clip: content-box;
+}
+.phone-right&gt;li:nth-child(1),
+.phone-right&gt;li:nth-child(5){
+    margin-left: 0;
+}
+.center-household{
+    margin-bottom: 8px;
+    height: 686px;
+    background-color: yellow;
+}
+.household-title{
+    height: 58px;
+    background-color: black;
+}
+.household-content{
+    height: 614px;
+}
+.household-content&gt;li{
+    position: relative;
+    margin-left: 14px;
+    margin-bottom: 28px;
+    float: left;
+    width: 234px;
+    height: 300px;
+    background-color: #d7d7d7;
+}
+.household-content&gt;li:nth-child(1),
+.household-content&gt;li:nth-child(6){
+    margin-left: 0;
+}
+.household-content&gt;li:last-child p:first-child{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 143px;
+    border: 1px solid #000;
+}
+.household-content&gt;li:last-child p:last-child{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 143px;
+    border: 1px solid #000;
+}
+.center-video{
+    height: 343px;
+    background-color: pink;
+}
+.video-title{
+    height: 58px;
+    background-color: black;
+}
+.video-content{
+    height: 285px;
+}
+.video-content&gt;li{
+    float: left;
+    width: 296px;
+    height: 100%;
+    border: 1px solid #000;
+}
+.video-content&gt;li+li{
+    margin-left: 14px;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="5局部bottom">(5)局部——bottom</h5>
+
+<p>bottom部分首先是一个水平居中的内容,然后内容可以划分为上下两部分,每个部分都是浮动的li,如图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1240&quot; height=&quot;220&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="rouge-code"><pre>&lt;div class="bottom"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="bottom-service"&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;div class="bottom-links"&gt;
+            &lt;div class="links-left"&gt;
+                &lt;ul&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                &lt;/ul&gt;
+            &lt;/div&gt;
+            &lt;div class="links-right"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+</pre></td><td class="rouge-code"><pre>.bottom {
+    height: 274px;
+    background-color: #fff;
+}
+.bottom-service{
+    height: 80px;
+    background-color: seagreen;
+}
+.bottom-service&gt;ul{
+    height: 100%;
+}
+.bottom-service&gt;ul li{
+    position: relative;
+    padding: 0 50px;
+    float: left;
+    width: 20%;
+    height: 100%;
+    background-color: goldenrod;
+    background-clip: content-box;
+}
+.bottom-service&gt;ul li+li::before{
+    position: absolute;
+    top: 28px;
+    left: 0;
+    content: '';
+    width: 1px;
+    height: 24px;
+    background-color: #999;
+}
+.bottom-links{
+    height: 192px;
+    background-color: #8545e0;
+}
+.links-left{
+    float: left;
+    width: 960px;
+    height: 100%;
+    background-color: yellow;
+}
+.links-left&gt;ul{
+    height: 100%;
+}
+.links-left&gt;ul li{
+    padding-right: 60px;
+    float: left;
+    width: 16.666666666666667%;
+    height: 100%;
+    border: 1px solid #000;
+    background-color: #ff0000;
+    background-clip: content-box;
+}
+.links-right{
+    float: right;
+    width: 252px;
+    height: 100%;
+    background-color: yellow;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="6局部footer">(6)局部——footer</h5>
+
+<p>footer划分如图:</p>
+
+<p><img src="data:image/svg+xml;utf8,&lt;?xml version=&quot;1.0&quot;?&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;1240&quot; height=&quot;143&quot;&gt;&lt;/svg&gt;" alt="image.png" /></p>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>&lt;div class="footer"&gt;
+    &lt;div class="footer-info"&gt;
+        &lt;div class="info-left"&gt;&lt;/div&gt;
+        &lt;div class="info-right"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="footer-slogan"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="rouge-code"><pre>.footer {
+    margin: 0 auto;
+    padding: 30px 0;
+    width: 1226px;
+    height: 166px;
+    border: 1px solid #000;
+}
+.footer-info{
+    height: 57px;
+    background-color: #6effb1;
+}
+.info-left{
+    float: left;
+    width: 630px;
+    height: 100%;
+    border: 1px solid #000;
+}
+.info-right{
+    float: right;
+    width: 436px;
+    height: 100%;
+    border: 1px solid #000;
+}
+.footer-slogan{
+    margin-top: 30px;
+    height: 19px;
+    background-color: #8545e0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="7全部代码优化后">(7)全部代码(优化后)</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div class="header"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="header-left fl"&gt;&lt;/div&gt;
+        &lt;div class="header-rigth fr"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="top"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="top-nav"&gt;&lt;/div&gt;
+        &lt;div class="top-slider"&gt;
+            &lt;div class="slider-navbar"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="top-recommend"&gt;
+            &lt;div class="recommend-left fl"&gt;&lt;/div&gt;
+            &lt;div class="recommend-right fr"&gt;
+                &lt;ul&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                &lt;/ul&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="top-flashsale"&gt;
+            &lt;div class="flashsale-title common-title"&gt;&lt;/div&gt;
+            &lt;div class="flashsale-content"&gt;
+                &lt;div class="content-timer fl"&gt;&lt;/div&gt;
+                &lt;ul class="content-shops"&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                &lt;/ul&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="center"&gt;
+    &lt;div class="center-phone module-box"&gt;
+        &lt;div class="phone-title common-title"&gt;&lt;/div&gt;
+        &lt;div class="phone-content"&gt;
+            &lt;div class="phone-left fl"&gt;&lt;/div&gt;
+            &lt;ul class="phone-right"&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="center-household module-box"&gt;
+        &lt;div class="household-title common-title"&gt;&lt;/div&gt;
+        &lt;div class="household-content"&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;
+                &lt;p&gt;&lt;/p&gt;
+                &lt;p&gt;&lt;/p&gt;
+            &lt;/li&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="center-video"&gt;
+        &lt;div class="video-title common-title"&gt;&lt;/div&gt;
+        &lt;ul class="video-content"&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="bottom"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="bottom-service"&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;div class="bottom-links"&gt;
+            &lt;div class="links-left fl"&gt;
+                &lt;ul&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;/li&gt;
+                &lt;/ul&gt;
+            &lt;/div&gt;
+            &lt;div class="links-right fr"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="footer"&gt;
+    &lt;div class="footer-info"&gt;
+        &lt;div class="info-left fl"&gt;&lt;/div&gt;
+        &lt;div class="info-right fr"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="footer-slogan"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+</pre></td><td class="rouge-code"><pre>/*-------------------抽取公共样式-----------------*/
+* { /*为了方便,就这样清空默认样式了*/
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+}
+body {
+    background-color: #f5f5f5;
+}
+.container {  /*水平居中的内容盒子*/
+    width: 1226px;
+    height: 100%;
+    margin: 0 auto;
+    border: 1px solid #f00;
+}
+.common-title {
+    height: 58px;
+    background-color: #000;
+}
+.fl {float: left;}
+.fr {float: right;}
+.recommend-right,
+.flashsale-content,
+.phone-right &gt; li,
+.household-content &gt; li:last-child &gt; p,
+.video-content &gt; li,
+.links-left &gt; ul li,
+.footer,
+.info-left,
+.info-right {border: 1px solid #000;}  /*添加边框样式只是为了方便观察,不是布局必须,可删*/
+
+
+/*-----header部分-----*/
+.header {
+    margin-bottom: 20px;
+    height: 40px;
+    background-color: #333;
+}
+.header-left {
+    width: 380px;
+    height: 100%;
+    background-color: #0f0;
+}
+.header-rigth {
+    width: 260px;
+    height: 100%;
+    background-color: #0f0;
+}
+
+
+/*--------top部分--------*/
+.top {
+    /*height: 1210px;*/
+    background-color: #fff;
+}
+.top-nav {
+    height: 100px;
+    background-color: #f00;
+}
+.top-slider {
+    margin-bottom: 14px;
+    position: relative; /*父相*/
+    height: 460px;
+    background-color: #00f;
+}
+.slider-navbar {
+    position: absolute; /*子绝*/
+    top: 0;
+    left: 0;
+    width: 234px;
+    height: 100%;
+    background-color: black;
+    opacity: .5;
+}
+.top-recommend {
+    margin-bottom: 26px;
+    height: 170px;
+    background-color: #0f0;
+}
+.recommend-left {
+    height: 100%;
+    width: 234px;
+    background-color: skyblue;
+}
+.recommend-right {
+    width: 978px;
+    height: 100%;
+}
+.recommend-right &gt; ul {height: 100%;}
+.recommend-right &gt; ul li {
+    float: left; /*三列等宽,浮动布局*/
+    width: 316px;
+    height: 100%;
+    background-color: deepskyblue;
+}
+.recommend-right &gt; ul li + li { margin-left: 14px;}  /*设置浮动间隔*/
+.top-flashsale {
+    height: 438px;
+    background-color: #ff4455;
+}
+.flashsale-title {}
+.flashsale-content {
+    padding-bottom: 40px;
+    height: 380px;
+}
+.content-timer {
+    margin-right: 14px;
+    width: 234px;
+    height: 100%;
+    background-color: #fff;
+}
+.content-shops {
+    overflow: hidden; /*触发bfc,以达到自适应*/
+    height: 100%;
+    background-color: #6effb1;
+}
+.content-shops &gt; li {
+    float: left; /*四列等宽,浮动布局*/
+    width: 234px;
+    height: 100%;
+    background-color: #fff;
+}
+.content-shops &gt; li + li {margin-left: 12.5px;}  /*设置浮动间隔*/
+
+
+/*--------center部分--------*/
+.module-box {  /*类似的模块*/
+    margin-bottom: 8px;
+    height: 686px;
+}
+.center {
+    margin: 0 auto;
+    margin-bottom: 60px;
+    padding-top: 60px;
+    width: 1226px;
+    /*height: 1791px;*/
+    background-color: #fff;
+}
+.center-phone {background-color: yellow;}
+.phone-title {}
+.phone-content {
+    height: 628px;
+    background-color: pink;
+}
+.phone-left {
+    width: 234px;
+    height: 100%;
+    background-color: darkseagreen;
+}
+.phone-right {
+    overflow: hidden; /*触发bfc以达到自适应*/
+    height: 100%;
+    background-color: #ccc;
+}
+.phone-right &gt; li {
+    margin-bottom: 28px; /*设置下边距*/
+    padding-left: 14px; /*用padding模拟盒子间隔*/
+    float: left; /*四列等宽,浮动布局*/
+    width: 25%;
+    height: 300px;
+    background-color: #f00;
+    background-clip: content-box; /*背景色从content开始绘起*/
+}
+.center-household {background-color: yellow;}
+.household-title {}
+.household-content {height: 614px;}
+.household-content &gt; li {
+    position: relative; /*父相*/
+    margin-left: 14px; /*设置浮动间隔*/
+    margin-bottom: 28px; /*设置下边距*/
+    float: left; /*五列等宽,浮动布局*/
+    width: 234px;
+    height: 300px;
+    background-color: #d7d7d7;
+}
+.household-content &gt; li:nth-child(1),
+.household-content &gt; li:nth-child(6) {margin-left: 0; }  /*消除每行第一个的间隔*/
+.household-content &gt; li:last-child p:first-child {
+    position: absolute; /*子绝*/
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 143px;
+}
+.household-content &gt; li:last-child p:last-child {
+    position: absolute; /*子绝*/
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 143px;
+}
+.center-video {
+    height: 343px;
+    background-color: pink;
+}
+.video-title {}
+.video-content {height: 285px;}
+.video-content &gt; li {
+    float: left; /*四列等宽,浮动布局*/
+    width: 296px;
+    height: 100%;
+}
+.video-content &gt; li + li {margin-left: 14px; }   /*设定浮动间隔*/
+
+
+/*--------bottom部分--------*/
+.bottom {
+    /*height: 274px;*/
+    background-color: #fff;
+}
+.bottom-service {
+    height: 80px;
+    background-color: seagreen;
+}
+.bottom-service &gt; ul {height: 100%;}
+.bottom-service &gt; ul li {
+    position: relative; /*父相*/
+    padding: 0 50px; /*用padding模拟盒子间隔*/
+    float: left; /*五列等宽,浮动布局*/
+    width: 20%;
+    height: 100%;
+    background-color: goldenrod;
+    background-clip: content-box; /*背景色从content开始绘起*/
+}
+.bottom-service &gt; ul li + li::before { /*用伪元素模拟分割线*/
+    position: absolute; /*子绝*/
+    top: 28px;
+    left: 0;
+    content: ''; /*伪元素必须有content*/
+    width: 1px;
+    height: 24px;
+    background-color: #999;
+}
+.bottom-links {
+    height: 192px;
+    background-color: #8545e0;
+}
+.links-left {
+    width: 960px;
+    height: 100%;
+    background-color: yellow;
+}
+.links-left &gt; ul {height: 100%;}
+.links-left &gt; ul li {
+    padding-right: 60px;
+    float: left; /*六列等宽,浮动布局*/
+    width: 16.666666666666667%;
+    height: 100%;
+    background-color: #ff0000;
+    background-clip: content-box; /*背景色从content开始绘起*/
+}
+.links-right {
+    width: 252px;
+    height: 100%;
+    background-color: yellow;
+}
+
+
+/*--------footer部分---------*/
+.footer {
+    margin: 0 auto;
+    padding: 30px 0;
+    width: 1226px;
+    height: 166px;
+}
+.footer-info {
+    height: 57px;
+    background-color: #6effb1;
+}
+.info-left {
+    width: 630px;
+    height: 100%;
+}
+.info-right {
+    width: 436px;
+    height: 100%;
+}
+.footer-slogan {
+    margin-top: 30px;
+    height: 19px;
+    background-color: #8545e0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>以上就是优化后的代码了，由于在下才疏学浅，所用方法不敢保证是最简单的，优化也肯定不是最优的，仅仅是的我的一种思路而已，各位参考参考就好。</p>
+
+<h5 id="812-flexboxgrid搭配用法未来">8.1.2 Flexbox+Grid搭配用法(未来…)</h5>
+
+<p>html代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+</pre></td><td class="rouge-code"><pre>&lt;body&gt;
+&lt;div class="header"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="header-left"&gt;&lt;/div&gt;
+        &lt;div class="header-rigth"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="top"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="top-nav"&gt;&lt;/div&gt;
+        &lt;div class="top-slider"&gt;
+            &lt;div class="slider-navbar"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="top-recommend-left"&gt;&lt;/div&gt;
+        &lt;div class="top-recommend-right"&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;div class="top-flashsale-title"&gt;&lt;/div&gt;
+        &lt;div class="top-flashsale-timer"&gt;&lt;/div&gt;
+        &lt;ul class="top-flashsale-shops"&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="center"&gt;
+    &lt;div class="center-phone-title"&gt;&lt;/div&gt;
+    &lt;div class="center-phone-content"&gt;
+        &lt;div class="phone-content-item1"&gt;&lt;/div&gt;
+        &lt;div class="phone-content-item2"&gt;&lt;/div&gt;
+        &lt;div class="phone-content-item3"&gt;&lt;/div&gt;
+        &lt;div class="phone-content-item4"&gt;&lt;/div&gt;
+        &lt;div class="phone-content-item5"&gt;&lt;/div&gt;
+        &lt;div class="phone-content-item6"&gt;&lt;/div&gt;
+        &lt;div class="phone-content-item7"&gt;&lt;/div&gt;
+        &lt;div class="phone-content-item8"&gt;&lt;/div&gt;
+        &lt;div class="phone-content-item9"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="center-household-title"&gt;&lt;/div&gt;
+    &lt;div class="center-household-content"&gt;
+        &lt;div class="row"&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="row"&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+            &lt;div class="household-content-item"&gt;&lt;/div&gt;
+            &lt;div class="household-content-item"&gt;
+                &lt;p&gt;&lt;/p&gt;
+                &lt;p&gt;&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+
+    &lt;/div&gt;
+
+    &lt;div class="center-video-title"&gt;&lt;/div&gt;
+    &lt;ul class="center-video-content"&gt;
+        &lt;li&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="bottom"&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="bottom-service"&gt;
+            &lt;div class="service-item"&gt;&lt;/div&gt;
+            &lt;div class="service-item"&gt;&lt;/div&gt;
+            &lt;div class="service-item"&gt;&lt;/div&gt;
+            &lt;div class="service-item"&gt;&lt;/div&gt;
+            &lt;div class="service-item"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="bottom-links-left"&gt;
+            &lt;div class="links-left-item"&gt;&lt;/div&gt;
+            &lt;div class="links-left-item"&gt;&lt;/div&gt;
+            &lt;div class="links-left-item"&gt;&lt;/div&gt;
+            &lt;div class="links-left-item"&gt;&lt;/div&gt;
+            &lt;div class="links-left-item"&gt;&lt;/div&gt;
+            &lt;div class="links-left-item"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="bottom-links-right"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="footer"&gt;
+    &lt;div class="footer-info"&gt;
+        &lt;div class="info-left"&gt;&lt;/div&gt;
+        &lt;div class="info-right"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="footer-slogan"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>css代码:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+</pre></td><td class="rouge-code"><pre>/*-------------------抽取公共样式-----------------*/
+* { /*为了方便,就这样清空默认样式了*/
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+body {
+    background-color: #f5f5f5;
+    display: grid;
+    /*整体布局 设置网格列,设置网格行,再设定网格区域*/
+    grid-template-columns: 1fr 1226px 1fr;
+    grid-template-rows: 40px 20px auto auto 274px 166px;
+    grid-template-areas:
+        "header header header"
+        ". . ." 
+        "top top top"
+        ". center ."
+        "bottom bottom bottom"
+        ". footer .";
+}
+.container { /*水平居中的内容盒子*/
+    width: 1226px;
+    height: 100%;
+    margin: 0 auto;
+    border: 1px solid #f00;
+}
+.top-recommend-right,
+.top-flashsale-timer,
+.top-flashsale-shops li,
+.center-phone-content &gt; div,
+.center-household-content .row,
+.household-content-item:last-of-type p,
+.center-video-content li,
+.service-item,
+.links-left-item,
+.info-left,
+.info-right,
+.info-right {border: 1px solid #000;}  /*添加边框样式只是为了方便观察,不是布局必须,可删*/
+
+
+/*-----header部分-----*/
+.header {
+    grid-area: header; /*指定网格区域*/
+    background-color: #333;
+}
+.header .container {
+    display: flex;
+    justify-content: space-between;
+}
+.header-left {
+    width: 380px;
+    background-color: #0f0;
+}
+.header-rigth {
+    width: 260px;
+    background-color: #0f0;
+}
+
+
+/*--------top部分--------*/
+.top {
+    grid-area: top; /*指定网格区域*/
+    background-color: #fff;
+}
+.top .container {
+    display: grid;
+    /*top部分布局 设置网格行,设置网格列,再设定网格区域*/
+    grid-template-rows: 100px 460px 14px 170px 26px 58px 340px 40px;
+    grid-template-columns: auto 14px 978px;
+    grid-template-areas:
+        "top-nav top-nav top-nav"
+        "top-slider top-slider top-slider"
+        ". . ."
+        "recommend-left . recommend-right"
+        ". . ."
+        "flashsale-title flashsale-title flashsale-title"
+        "flashsale-timer . flashsale-shops"
+        ". . .";
+}
+.top-nav {
+    grid-area: top-nav;
+    background-color: #f00;
+}
+.top-slider {
+    position: relative;
+    grid-area: top-slider;
+    background-color: #00f;
+}
+.top-slider .slider-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 234px;
+    background-color: black;
+    opacity: .5;
+}
+.top-recommend-left {
+    grid-area: recommend-left;
+    background-color: skyblue;
+}
+.top-recommend-right {grid-area: recommend-right;}
+.top-recommend-right &gt; ul {
+    display: flex;
+    justify-content: space-between;
+    height: 100%;
+}
+.top-recommend-right li {
+    width: 316px;
+    background-color: deepskyblue;
+}
+.top-flashsale-title {
+    grid-area: flashsale-title;
+    background-color: #000;
+}
+.top-flashsale-timer {
+    grid-area: flashsale-timer;
+    background-color: #fff;
+}
+.top-flashsale-shops {
+    display: flex;
+    justify-content: space-between;
+    grid-area: flashsale-shops;
+    background-color: #6effb1;
+}
+.top-flashsale-shops li {width: 234px;}
+
+
+/*--------center部分--------*/
+.center {
+    margin-bottom: 60px;  /*边距可以在网格分区的时候考虑进去,把边距设成一行或一列,不要放内容就好了*/
+    padding-top: 60px;
+    grid-area: center; /*指定网格区域*/
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+.center-phone-title {
+    height: 58px;
+    background-color: black;
+}
+.center-phone-content {
+    margin-bottom: 8px;
+    display: grid;
+    /*这里用flex分格更好,代码更少更简洁*/
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-areas:
+        "big1 normal2 normal3 normal4 normal5"
+        "big1 normal6 normal7 normal8 normal9";
+    grid-gap: 14px; /*网格间隔*/
+    height: 628px;
+    background-color: pink;
+}
+.phone-content-item1 {grid-area: big1;}
+.phone-content-item2 {grid-area: normal2;}
+.phone-content-item3 {grid-area: normal3;}
+.phone-content-item4 {grid-area: normal4;}
+.phone-content-item5 {grid-area: normal5;}
+.phone-content-item6 {grid-area: normal6;}
+.phone-content-item7 {grid-area: normal7;}
+.phone-content-item8 {grid-area: normal8;}
+.phone-content-item9 {grid-area: normal9;}
+.center-household-title {
+    height: 58px;
+    background-color: black;
+}
+.center-household-content {
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    height: 614px;
+    background-color: pink;
+}
+.center-household-content .row {
+    display: flex;
+    justify-content: space-between;
+    flex: 1;
+}
+.row .household-content-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 234px;
+    background-color: #fff;
+}
+.household-content-item:last-of-type p {height: 143px;}
+.center-video-title {
+    height: 58px;
+    background-color: black;
+}
+.center-video-content {
+    display: flex;
+    justify-content: space-between;
+    height: 285px;
+    background-color: pink;
+}
+.center-video-content li {width: 296px;}
+
+
+/*--------bottom部分--------*/
+.bottom {
+    grid-area: bottom; /*指定网格区域*/
+    background-color: #fff;
+}
+.bottom .container {
+    display: grid;
+    grid-template-columns: auto 252px;
+    grid-template-rows: 80px auto;
+    grid-template-areas: "service service" "links-left links-right";
+}
+.container .bottom-service {
+    display: flex;
+    grid-area: service;
+    background-color: seagreen;
+}
+.service-item {flex: 1;}
+.container .bottom-links-left {
+    display: flex;
+    grid-area: links-left;
+    background-color: yellow;
+}
+.links-left-item {flex: 1;}
+.container .bottom-links-right {
+    grid-area: links-right;
+    background-color: yellowgreen;
+}
+
+
+/*--------footer部分---------*/
+.footer {
+    padding: 30px 0;
+    grid-area: footer; /*指定网格区域*/
+}
+.footer-info {
+    display: flex;
+    justify-content: space-between;
+    height: 57px;
+    background-color: #6effb1;
+}
+.info-left {width: 630px;}
+.info-right {width: 436px;}
+.footer-slogan {
+    margin-top: 30px;
+    height: 19px;
+    background-color: #8545e0;
+}
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="九其他补充">九、其他补充：</h3>
+
+<h4 id="91-移动端viewport">9.1 移动端viewport</h4>
+
+<h5 id="设置viewport">设置viewport：</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"&gt;
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="阅读推荐">阅读推荐：</h5>
+
+<p>解读 viewport—网页自适应移动 app 神器</p>
+
+<p>https://juejin.im/entry/58e750a02f301e0062367ded</p>
+
+<h4 id="92-媒体查询">9.2 媒体查询</h4>
+
+<h5 id="代码示例">代码示例:</h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>@media (max-width: 767px) { ...css代码... }
+@media (min-width: 768px) and (max-width: 991px) { ...css代码... }
+@media (min-width: 992px) and (max-width: 1199px) { ...css代码... }
+@media (min-width: 1200px) { ...css代码... }
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="阅读推荐-1">阅读推荐:</h5>
+
+<p>MDN文档介绍</p>
+
+<p>https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Media_queries</p>
+
+<p>随方逐圆 – 全面理解 CSS 媒体查询</p>
+
+<p>https://juejin.im/entry/595b6208f265da6c3902041e</p>
+
+<h4 id="93-rem">9.3 REM</h4>
+
+<h5 id="阅读推荐-2">阅读推荐:</h5>
+
+<p>Rem布局的原理解析</p>
+
+<p>http://yanhaijing.com/css/2017/09/29/principle-of-rem-layout/</p>
+
+<p>rem是如何实现自适应布局的？</p>
+
+<p>http://caibaojian.com/web-app-rem.html</p>
+
+<h4 id="94-flexbox">9.4 Flexbox</h4>
+
+<h5 id="阅读推荐-3">阅读推荐</h5>
+
+<p>理解Flexbox：你需要知道的一切</p>
+
+<p>https://www.w3cplus.com/css3/understanding-flexbox-everything-you-need-to-know.html</p>
+
+<p>深入理解 flex 布局以及计算</p>
+
+<p>https://www.w3cplus.com/css3/flexbox-layout-and-calculation.html?from=groupmessage</p>
+
+<h4 id="95-css-grid">9.5 CSS Grid</h4>
+
+<h5 id="阅读推荐-4">阅读推荐</h5>
+
+<p>grid布局学习指南</p>
+
+<p>http://blog.jirengu.com/?p=990</p>
+
+<p>grid规范草稿</p>
+
+<p>https://drafts.csswg.org/css-grid/</p>
+:ET

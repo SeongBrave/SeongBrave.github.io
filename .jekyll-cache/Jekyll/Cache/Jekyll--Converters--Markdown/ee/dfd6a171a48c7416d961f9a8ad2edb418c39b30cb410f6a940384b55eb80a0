@@ -1,0 +1,10 @@
+I"�<p>1 #region 7.1 系统泛型委托 - Action 委托 - 无返回值
+        ///
+        /// 7.1 系统泛型委托 - Action 委托
+        ///
+        static void TestAction()
+        {
+            List list = GetDogList();
+            //7.1.1调用 List 集合的 ForEach 方法 遍历 集合，每次遍历 一个元素 就会调用一下 传入的 Action委托，并将 元素传入Action参数
+            list.ForEach(new Action(delegate(C01Dog d) { Console.WriteLine(d.Name + “,” + d.Age); }));</p>
+:ET

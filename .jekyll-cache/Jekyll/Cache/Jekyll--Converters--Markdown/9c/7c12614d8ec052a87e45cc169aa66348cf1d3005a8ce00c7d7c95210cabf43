@@ -1,0 +1,12 @@
+I"4<p>mongod的主要参数有:</p>
+
+<h2 id="备份数据库">备份数据库</h2>
+<p>###1、操作事列
+<code class="language-plaintext highlighter-rouge">mongodump -h 127.0.0.1:27017 -d BlackBoardData -o ~/data</code>
+###2、注意事项
+需要进入mongodb bin目录下才可以使用<code class="language-plaintext highlighter-rouge">cd /Users/eme/Library/mongodb/bin</code></p>
+
+<h2 id="数据库恢复">数据库恢复</h2>
+<p>###1、操作事列
+<code class="language-plaintext highlighter-rouge">mongorestore -d BlackBoardData -o  ~/data/mongodb/</code></p>
+:ET

@@ -1,0 +1,117 @@
+I"�A<p>ABRecordRef获得通讯录中联系人</p>
+
+<p>###创建保存联系人得model</p>
+
+<p>PersonModel</p>
+
+<blockquote>
+  <p>PersonModel.h</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="sr">/**
+ *  联系人姓名
+ */</span><span class="err">
+@pr</span><span class="sr">o</span><span class="n">perty</span><span class="p">(</span><span class="n">nonatomic</span> <span class="p">,</span> <span class="n">strong</span><span class="p">)</span><span class="no">NSString</span> <span class="o">*</span><span class="n">m_personName</span><span class="p">;</span>
+
+<span class="sr">/**
+ *  电话号
+ */</span><span class="err">
+@pr</span><span class="sr">o</span><span class="n">perty</span><span class="p">(</span><span class="n">nonatomic</span> <span class="p">,</span> <span class="n">strong</span><span class="p">)</span><span class="no">NSString</span> <span class="o">*</span><span class="n">m_phoneNum</span><span class="p">;</span>
+
+<span class="sr">/**
+ *  保存联系人多个电话号
+ */</span><span class="err">
+@pr</span><span class="sr">o</span><span class="n">perty</span><span class="p">(</span><span class="n">nonatomic</span> <span class="p">,</span> <span class="n">strong</span><span class="p">)</span><span class="no">NSArray</span> <span class="o">*</span><span class="n">m_phoneList</span><span class="p">;</span></code></pre></figure>
+
+<p>Member的父类是<code class="language-plaintext highlighter-rouge">MTLModel</code>同时还遵守<code class="language-plaintext highlighter-rouge">&lt;MTLJSONSerializing&gt;</code>协议，查看这个协议你会发现里面有个必须实现的方法：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>+ (NSDictionary *)JSONKeyPathsByPropertyKey;
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>这个方法就是前面提到的用于字段转换的，下面实现这个方法</p>
+
+<blockquote>
+  <p>PersonModel.m
+暂时为做处理</p>
+</blockquote>
+
+<p>然后是通过联系人实例化 数组</p>
+
+<p>最后用一句代码来得到你想要的模型</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span><span class="p">(</span><span class="no">NSMutableArray</span> <span class="o">*</span><span class="p">)</span><span class="no">GetContactListData</span>
+<span class="p">{</span>
+ 
+ 
+  <span class="no">NSMutableArray</span> <span class="o">*</span><span class="n">contactList</span> <span class="o">=</span> <span class="p">[[</span><span class="no">NSMutableArray</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+    <span class="no">ABAddressBookRef</span> <span class="n">addressBook</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">([[</span><span class="no">UIDevice</span> <span class="n">currentDevice</span><span class="p">].</span><span class="nf">systemVersion</span> <span class="n">floatValue</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">6.0</span><span class="p">)</span>    <span class="p">{</span>
+        <span class="n">addressBook</span> <span class="o">=</span> <span class="no">ABAddressBookCreateWithOptions</span><span class="p">(</span><span class="no">NULL</span><span class="p">,</span> <span class="no">NULL</span><span class="p">);</span>
+        <span class="sr">//</span><span class="err">等待同意后向下执行
+        d</span><span class="sr">is</span><span class="n">patch_semaphore_t</span> <span class="n">sema</span> <span class="o">=</span> <span class="n">dispatch_semaphore_create</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>        <span class="no">ABAddressBookRequestAccessWithCompletion</span><span class="p">(</span><span class="n">addressBook</span><span class="p">,</span> <span class="o">^</span><span class="p">(</span><span class="n">bool</span> <span class="n">granted</span><span class="p">,</span> <span class="no">CFErrorRef</span> <span class="n">error</span><span class="p">)</span>                                                 <span class="p">{</span>                                                     <span class="n">dispatch_semaphore_signal</span><span class="p">(</span><span class="n">sema</span><span class="p">);</span>                                                 <span class="p">});</span>
+        <span class="n">dispatch_semaphore_wait</span><span class="p">(</span><span class="n">sema</span><span class="p">,</span> <span class="no">DISPATCH_TIME_FOREVER</span><span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+        <span class="n">addressBook</span> <span class="o">=</span> <span class="no">ABAddressBookCreate</span><span class="p">();</span>
+    <span class="p">}</span>
+     <span class="no">CFArrayRef</span> <span class="n">results</span> <span class="o">=</span> <span class="no">ABAddressBookCopyArrayOfAllPeople</span><span class="p">(</span><span class="n">addressBook</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="no">CFArrayGetCount</span><span class="p">(</span><span class="n">results</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="no">PersonModel</span> <span class="o">*</span><span class="n">model</span> <span class="o">=</span> <span class="p">[[</span><span class="no">PersonModel</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+        <span class="no">NSMutableDictionary</span> <span class="o">*</span><span class="n">dict</span> <span class="o">=</span><span class="p">[[</span><span class="no">NSMutableDictionary</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+        
+        <span class="no">ABRecordRef</span> <span class="n">person</span> <span class="o">=</span> <span class="no">CFArrayGetValueAtIndex</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+        <span class="sr">//</span><span class="err">读取f</span><span class="sr">i</span><span class="n">rstname</span>
+        <span class="no">NSString</span> <span class="o">*</span><span class="n">personName</span> <span class="o">=</span> <span class="p">(</span> <span class="no">NSString</span><span class="o">*</span><span class="p">)</span><span class="no">CFBridgingRelease</span><span class="p">(</span><span class="no">ABRecordCopyValue</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">kABPersonFirstNameProperty</span><span class="p">));</span>
+        <span class="sr">//</span><span class="err">读取la</span><span class="sr">s</span><span class="n">tname</span>
+        <span class="no">NSString</span> <span class="o">*</span><span class="n">lastname</span> <span class="o">=</span> <span class="p">(</span><span class="n">__bridge</span> <span class="no">NSString</span><span class="o">*</span><span class="p">)</span><span class="no">ABRecordCopyValue</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">kABPersonLastNameProperty</span><span class="p">);</span>
+        <span class="sr">//</span><span class="err">读取</span><span class="sr">mi</span><span class="n">ddlename</span>
+        <span class="no">NSString</span> <span class="o">*</span><span class="n">middlename</span> <span class="o">=</span> <span class="p">(</span><span class="n">__bridge</span> <span class="no">NSString</span><span class="o">*</span><span class="p">)</span><span class="no">ABRecordCopyValue</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">kABPersonMiddleNameProperty</span><span class="p">);</span>
+   
+         <span class="n">model</span><span class="p">.</span><span class="nf">m_personName</span> <span class="o">=</span> <span class="p">[</span><span class="no">NSString</span> <span class="n">stringWithFormat</span><span class="p">:</span><span class="err">@</span><span class="s2">"%@%@%@"</span><span class="p">,</span><span class="n">lastname</span><span class="o">==</span><span class="kp">nil</span><span class="sc">?@</span><span class="s2">""</span><span class="ss">:lastname</span><span class="p">,</span><span class="n">personName</span><span class="o">==</span><span class="kp">nil</span><span class="sc">?@</span><span class="s2">""</span><span class="ss">:personName</span><span class="p">,</span><span class="n">middlename</span><span class="o">==</span><span class="kp">nil</span><span class="sc">?@</span><span class="s2">""</span><span class="ss">:middlename</span><span class="p">];</span>
+         <span class="no">NSMutableArray</span> <span class="o">*</span><span class="n">telList</span> <span class="o">=</span> <span class="p">[[</span><span class="no">NSMutableArray</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+        <span class="sr">//</span><span class="err">读取电话多值
+        ABM</span><span class="sr">u</span><span class="n">ltiValueRef</span> <span class="n">phone</span> <span class="o">=</span> <span class="no">ABRecordCopyValue</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">kABPersonPhoneProperty</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="no">ABMultiValueGetCount</span><span class="p">(</span><span class="n">phone</span><span class="p">);</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+         <span class="sr">//</span><span class="err">获取电话Lab</span><span class="sr">e</span><span class="n">l</span>
+            <span class="no">NSString</span> <span class="o">*</span> <span class="n">personPhoneLabel</span> <span class="o">=</span> <span class="p">(</span><span class="n">__bridge</span> <span class="no">NSString</span><span class="o">*</span><span class="p">)</span><span class="no">ABAddressBookCopyLocalizedLabel</span><span class="p">(</span><span class="no">ABMultiValueCopyLabelAtIndex</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">k</span><span class="p">));</span>
+            <span class="sr">//</span><span class="err">获取該Lab</span><span class="sr">e</span><span class="n">l</span><span class="err">下的电话值</span>
+            <span class="no">NSString</span> <span class="o">*</span> <span class="n">personPhone</span> <span class="o">=</span> <span class="p">(</span><span class="n">__bridge</span> <span class="no">NSString</span><span class="o">*</span><span class="p">)</span><span class="no">ABMultiValueCopyValueAtIndex</span><span class="p">(</span><span class="n">phone</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>
+
+            <span class="p">[</span><span class="n">telList</span> <span class="n">addObject</span><span class="p">:</span><span class="err">@</span><span class="p">{</span><span class="err">@</span><span class="s2">"personPhoneLabel"</span><span class="ss">:personPhoneLabel</span><span class="p">,</span><span class="err">@</span><span class="s2">"personPhone"</span><span class="ss">:personPhone</span><span class="p">}];</span>
+            <span class="n">model</span><span class="p">.</span><span class="nf">m_phoneList</span> <span class="o">=</span> <span class="n">telList</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="nf">m_phoneList</span><span class="p">.</span><span class="nf">count</span> <span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">model</span><span class="p">.</span><span class="nf">m_phoneNum</span> <span class="o">=</span><span class="n">model</span><span class="p">.</span><span class="nf">m_phoneList</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="err">@</span><span class="s2">"personPhone"</span><span class="p">];</span>
+        <span class="p">}</span>
+        
+        <span class="n">dict</span><span class="p">[</span><span class="err">@</span><span class="s2">"phones"</span><span class="p">]</span> <span class="o">=</span><span class="n">telList</span> <span class="p">;</span>
+        
+        
+        <span class="p">[</span><span class="n">contactList</span> <span class="n">addObject</span><span class="ss">:model</span><span class="p">];</span>
+
+    <span class="p">}</span>
+    
+    <span class="no">CFRelease</span><span class="p">(</span><span class="n">results</span><span class="p">);</span>
+    <span class="no">CFRelease</span><span class="p">(</span><span class="n">addressBook</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">contactList</span><span class="p">;</span>
+    
+<span class="p">}</span></code></pre></figure>
+
+<p>##代码说明</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> <span class="no">NSMutableArray</span> <span class="o">*</span><span class="n">contactList</span> <span class="o">=</span> <span class="p">[[</span><span class="no">NSMutableArray</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+    <span class="no">ABAddressBookRef</span> <span class="n">addressBook</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">([[</span><span class="no">UIDevice</span> <span class="n">currentDevice</span><span class="p">].</span><span class="nf">systemVersion</span> <span class="n">floatValue</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">6.0</span><span class="p">)</span>    <span class="p">{</span>
+        <span class="n">addressBook</span> <span class="o">=</span> <span class="no">ABAddressBookCreateWithOptions</span><span class="p">(</span><span class="no">NULL</span><span class="p">,</span> <span class="no">NULL</span><span class="p">);</span>
+        <span class="sr">//</span><span class="err">等待同意后向下执行
+        d</span><span class="sr">is</span><span class="n">patch_semaphore_t</span> <span class="n">sema</span> <span class="o">=</span> <span class="n">dispatch_semaphore_create</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>         <span class="no">ABAddressBookRequestAccessWithCompletion</span><span class="p">(</span><span class="n">addressBook</span><span class="p">,</span> <span class="o">^</span><span class="p">(</span><span class="n">bool</span> <span class="n">granted</span><span class="p">,</span> <span class="no">CFErrorRef</span> <span class="n">error</span><span class="p">)</span>                                                 <span class="p">{</span>                                                     <span class="n">dispatch_semaphore_signal</span><span class="p">(</span><span class="n">sema</span><span class="p">);</span>                                                 <span class="p">});</span>
+        <span class="n">dispatch_semaphore_wait</span><span class="p">(</span><span class="n">sema</span><span class="p">,</span> <span class="no">DISPATCH_TIME_FOREVER</span><span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+        <span class="n">addressBook</span> <span class="o">=</span> <span class="no">ABAddressBookCreate</span><span class="p">();</span>
+        </code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>以上代码是实例化一个ABAddressBookRef 对象
+</pre></td></tr></tbody></table></code></pre></div></div>
+:ET

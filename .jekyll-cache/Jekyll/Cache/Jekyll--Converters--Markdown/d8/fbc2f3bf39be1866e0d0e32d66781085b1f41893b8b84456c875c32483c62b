@@ -1,0 +1,27 @@
+I"x	<p>SublimeText快捷键:</p>
+
+<p>###1、常用快捷键</p>
+
+<ul>
+  <li>在 html标签中  <code class="language-plaintext highlighter-rouge">comand + shift + k</code> 快速选中当前所在父级标签</li>
+  <li><code class="language-plaintext highlighter-rouge">Comand +Shift +h</code>：格式化</li>
+  <li><code class="language-plaintext highlighter-rouge">Comand + h</code>：替换单词</li>
+  <li><code class="language-plaintext highlighter-rouge">Comand +Alt +1,2...</code>：多屏幕显示 ，<code class="language-plaintext highlighter-rouge">加上Shift</code> 垂直显示</li>
+  <li>在js中 可以用<code class="language-plaintext highlighter-rouge"> Ctrl +Shift + m</code>可以快速 选中<code class="language-plaintext highlighter-rouge">{}</code>中的内容</li>
+  <li>在 html中可以用 <code class="language-plaintext highlighter-rouge">Comand +Shift +a</code>选中标签内的内容不包括标签，继续按会继续往上一层选择。可利用这个功能实时结构预览。</li>
+  <li><code class="language-plaintext highlighter-rouge">Ctrl +Shift +k</code>：快速删除一行</li>
+  <li><code class="language-plaintext highlighter-rouge">Comand +d</code> ：快速选中 重复的 文字 。</li>
+  <li><code class="language-plaintext highlighter-rouge">shift + Comand + d</code>: 快速复制上一行代码</li>
+  <li><code class="language-plaintext highlighter-rouge">Comand + Alt +[ </code>：快速折叠代码</li>
+  <li><code class="language-plaintext highlighter-rouge">Comand +k, Comand +1..</code>折叠代码</li>
+  <li><code class="language-plaintext highlighter-rouge">Ctrl+Shift+Enter</code>: 光标前插入行</li>
+  <li><code class="language-plaintext highlighter-rouge">Comand +Shift + l</code>: 快速给选中的文字添加光标，<code class="language-plaintext highlighter-rouge">按住Alt 然后右键拉</code>：可以给多行添加光标</li>
+  <li><code class="language-plaintext highlighter-rouge">写html文件时利用快捷键 Comand + Alt + . :可以快速关闭某个标签，如写&lt;html&gt;后按Alt+.可以快速得到&lt;/html&gt;。</code></li>
+</ul>
+
+<h3 id="2参考资料">2、参考资料</h3>
+<ul>
+  <li><a href="http://www.imooc.com/learn/40">前端开发工具技巧介绍—Sublime篇</a></li>
+  <li><a href="http://www.cnblogs.com/lanxuezaipiao/p/4151095.html">sublime Text 3实用功能和常用快捷键收集</a></li>
+</ul>
+:ET

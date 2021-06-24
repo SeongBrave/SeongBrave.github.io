@@ -1,0 +1,506 @@
+I"�<p><img src="/images/20190413/banner.png" alt="banner.png" /></p>
+
+<ul>
+  <li><a href="#%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D">项目介绍</a></li>
+  <li><a href="#app-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">App 架构设计</a></li>
+  <li><a href="#%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97">业务模块</a></li>
+  <li><a href="#%E5%85%AC%E7%94%A8%E6%A8%A1%E5%9D%97">公用模块</a></li>
+  <li><a href="#rxswift-%E7%9A%84%E4%BD%BF%E7%94%A8">RxSwift 的使用</a></li>
+  <li><a href="#%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82">网络请求</a></li>
+  <li><a href="#%E6%A8%A1%E5%9D%97%E8%B7%AF%E7%94%B1">模块路由</a></li>
+  <li><a href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86">错误处理</a>
+    <ul>
+      <li><a href="#%E6%8C%87%E4%BB%A4%E7%A0%81">指令码</a></li>
+    </ul>
+  </li>
+  <li><a href="#mvvm-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">MVVM 架构设计</a></li>
+  <li><a href="#gckit-cli-%E7%9A%84%E4%BD%BF%E7%94%A8">Gckit-CLI 的使用</a></li>
+  <li><a href="#nodejs-%E6%8E%A5%E5%8F%A3%E6%9C%8D%E5%8A%A1">Node.js 接口服务</a></li>
+  <li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+
+<p>本文主要介绍个人在 Swift 项目开发中的一些实践经验，供大家所借鉴或者探讨。</p>
+
+<p>提高开发效率，降低 Bug 发生率，是我们每个开发所追随的目标。个人认为通过 CocoaPods 实现模块化组件化，积累适合的组件模块，重复利用公用模块，不仅可以提高开发效率并且可以有效的降低 Bug 的发生，另外可以借助 <a href="https://github.com/SeongBrave/gckit">Gckit-CLI</a> 等脚本工具降低重复无用的代码编写，进一步提高开发效率，降低低级错误的发生，本文以下内容主要讲解个人通过 CocoaPods 结合 <a href="https://github.com/SeongBrave/gckit">Gckit-CLI</a> 实现开发效率的最大化的一些项目实践</p>
+
+<h2 id="项目介绍">项目介绍</h2>
+
+<blockquote>
+  <p>Twilight，项目取自暮光之城电影名
+所有的资源都已经开源到 Github 上了，包括服务端的接口项目</p>
+</blockquote>
+
+<p>Demo 效果演示</p>
+
+<p><img src="/images/20190413/showapp.gif" alt="showapp.gif" /></p>
+
+<h2 id="app-架构设计">App 架构设计</h2>
+
+<p><img src="/images/20190413/structurechart.png" alt="structurechart" /></p>
+
+<p>最顶层为 <code class="language-plaintext highlighter-rouge">主工程</code>，包含一些简单的配置、路由注册等，相当于一个空壳，模块化之后需要注意的一点是:模块的版本管理，每次发版一定要记录好每个模块的版本号等，否则代码回退、Bug 排查是一件很困难的事，我们主工程中会记录每次发版时各个模块的版本号的。接下来就是<code class="language-plaintext highlighter-rouge">业务层</code>，包括各个不同的业务模块，这些模块之间的调用是通过路由实现的，不能存在引用关系的，每个模块会依赖一个<code class="language-plaintext highlighter-rouge">上下文模块</code>和<code class="language-plaintext highlighter-rouge">项目配置模块</code>，<code class="language-plaintext highlighter-rouge">上下文模块</code>主要是管理用户对象等用户权限相关的事，<code class="language-plaintext highlighter-rouge">项目配置模块</code>主要是整体 App 的一些配置数据、以及主题颜色和一些第三方 key 的配置等(主要为了方便配置统一管理)。业务层是整个 App 的核心功能，而<code class="language-plaintext highlighter-rouge">公用组件模块</code>是跨业务、跨 App 的，不同的 App 之间是可以公用这些组件的，这一层最好作为公司级别的供大家所有人使用。最下层为第三方库，一般情况下我们需要对第三方做一层脱离耦合的封装，以便我们在修改第三方时而不影响我们的业务模块。整个项目从上到下为依赖关系，下层为上层提供功能服务。</p>
+
+<h2 id="业务模块">业务模块</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>模块</th>
+      <th>介绍</th>
+      <th>地址</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Carlisle</td>
+      <td>登陆注册模块</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/Carlisle.git</code></td>
+    </tr>
+    <tr>
+      <td>Bella</td>
+      <td>上下文模块</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/Bella.git</code></td>
+    </tr>
+    <tr>
+      <td>Alice</td>
+      <td>项目配置模块</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/Alice.git</code></td>
+    </tr>
+    <tr>
+      <td>Jacob</td>
+      <td>首页模块</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/Jacob</code></td>
+    </tr>
+    <tr>
+      <td>Twilight</td>
+      <td>主工程项目</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/Twilight.git</code></td>
+    </tr>
+    <tr>
+      <td>TwilightSpecs</td>
+      <td>CocoaPods 私有仓储</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/TwilightSpecs</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>登陆注册模块(<a href="https://github.com/SeongBrave/Carlisle.git">Carlisle</a>)</p>
+
+<blockquote>
+  <p>包含用户注册、登陆、找回密码等功能，主要是用户权限相关的管理界面，登陆注册模块是参考<a href="https://github.com/ReactiveX/RxSwift">RxSwift</a>官方 Demo 简单修改完成的。</p>
+</blockquote>
+
+<p>上下文模块(<a href="https://github.com/SeongBrave/Bella.git">Bella</a>)</p>
+
+<blockquote>
+  <p>上下文模块主要用于用户对象的管理，后期会把考虑把本地缓存等加密功能加上，上下文模块被每个业务模块所依赖，用于管理用户上下文对象，同步用户信息的修改。</p>
+</blockquote>
+
+<p>项目配置模块(<a href="https://github.com/SeongBrave/Alice.git">Alice</a>)</p>
+
+<blockquote>
+  <p>包括项目的主题等各个模块的配置，涉及所有业务模块的主题颜色配置，以及一些第三方库的 key，各个模块的通知等。</p>
+</blockquote>
+
+<p>首页模块(<a href="https://github.com/SeongBrave/Jacob">Jacob</a>)</p>
+
+<blockquote>
+  <p>商品列表模块 取值暮光之城中 -Jacob</p>
+</blockquote>
+
+<p>该模块 <strong>90%</strong> 的代码是通过<a href="https://github.com/SeongBrave/gckit">Gckit-CLI</a>生成的，一键生成包含了大部分的逻辑代码，
+上拉加载更多、下拉刷新、错误提示、出错重试处理等逻辑，这些大部分的逻辑代码是不需要修改的。</p>
+
+<p>目录结构:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre>├── Api
+│   ├── Home_api.swift
+│   └── Product_api.swift
+├── Model
+│   ├── Home_model.swift
+│   └── Product_model.swift
+├── Module
+│   ├── JacobCore.swift
+│   └── Jacob_router.swift
+├── View
+│   └── tCell
+│       ├── Home_tCell.swift
+│       └── Product_tCell.swift
+├── ViewController
+│   ├── Home_vc.swift
+│   └── Product_vc.swift
+└── ViewModel
+    ├── Home_vm.swift
+    └── Product_vm.swift
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>目录结构分为:</p>
+
+<ul>
+  <li>Api: 接口 Api</li>
+  <li>Model: 实例 Model</li>
+  <li>Module: 模块相关管理类，包含路由注册和提供别的模块访问的管理类</li>
+  <li>View: 相关自定义的 View</li>
+  <li>ViewController: 对应的 ViewController</li>
+  <li>ViewModel: 对应的 ViewModel</li>
+</ul>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre>  <span class="c1">/// 界面第一次初始化</span>
+ <span class="k">let</span> <span class="nv">_</span> <span class="o">=</span>  <span class="kt">Observable</span><span class="o">.</span><span class="nf">of</span><span class="p">(</span>
+     <span class="n">input</span><span class="o">.</span><span class="n">firstLoadTriger</span><span class="p">,</span>
+     <span class="n">reloadTrigger</span><span class="o">.</span><span class="nf">withLatestFrom</span><span class="p">(</span><span class="n">input</span><span class="o">.</span><span class="n">firstLoadTriger</span><span class="p">))</span>
+     <span class="o">.</span><span class="nf">merge</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">{</span> <span class="kt">Home_api</span><span class="o">.</span><span class="nf">homes</span><span class="p">(</span><span class="nv">page</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">pageSize</span><span class="p">:</span> <span class="mi">10</span><span class="p">)}</span><span class="o">.</span><span class="nf">share</span><span class="p">(</span><span class="nv">replay</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+     <span class="o">.</span><span class="nf">emeRequestApiForArray</span><span class="p">(</span><span class="kt">Home_model</span><span class="o">.</span><span class="k">self</span><span class="p">,</span><span class="nv">activityIndicator</span><span class="p">:</span> <span class="n">loading</span><span class="p">)</span>
+     <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{[</span><span class="k">unowned</span> <span class="k">self</span><span class="p">]</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">in</span>
+         <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+         <span class="k">case</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">data</span><span class="p">):</span>
+             <span class="k">self</span><span class="o">.</span><span class="n">hasNextPage</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">10</span>
+             <span class="k">self</span><span class="o">.</span><span class="n">homeElements</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">data</span>
+             <span class="k">self</span><span class="o">.</span><span class="n">page</span> <span class="o">=</span> <span class="mi">1</span>
+         <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+             <span class="k">self</span><span class="o">.</span><span class="n">refresherror</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+         <span class="p">}</span>
+     <span class="p">})</span>
+     <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>上面的代码 通过信号筛选，<code class="language-plaintext highlighter-rouge">reloadTrigger</code>代表点击重新加载的事件，经过参数格式化、发送网络请求、数据解析等数据处理，最后只需关注解析成功之后的 Model 数据然后更新 UI 界面。</p>
+
+<h2 id="公用模块">公用模块</h2>
+
+<p>公司的公用组件应该是长期积累的，不同的该功能，大部分是与业务无关的可以扩 App 或者夸业务使用的，经过长时间的积累会慢慢完善，比如京东内部有各种各样的模块组件，对与新开发一个项目来说会提高很多倍，这些公用组件模块通过 CocoaPods 管理，或者也可以通过 Framework 管理</p>
+
+<p>以下是我个人积累的一些公用库，平常写 Demo 啥的都是非常方便的</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>模块</th>
+      <th>介绍</th>
+      <th>地址</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>UtilCore</td>
+      <td>基础工具库</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/UtilCore</code></td>
+    </tr>
+    <tr>
+      <td>NetWorkCore</td>
+      <td>网络工具库</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/NetWorkCore</code></td>
+    </tr>
+    <tr>
+      <td>EmptyDataView</td>
+      <td>列表为空时自定义展示空界面</td>
+      <td><code class="language-plaintext highlighter-rouge">https://github.com/SeongBrave/EmptyDataView</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="rxswift-的使用">RxSwift 的使用</h2>
+
+<p>项目中大部分的逻辑处理是借助 RxSwift 实现的响应式编程，当界面上的每个操作都会转换为一个信号然后通过对信号的各种加工网络请求，到返回的数据 JSON 解析以及错误对象的处理，感觉整个开发都是在开凿水渠，等开发完了就不用管了。</p>
+
+<h2 id="网络请求">网络请求</h2>
+
+<p><a href="https://github.com/SeongBrave/NetWorkCore">NetWorkCore</a>通过对<a href="https://github.com/Alamofire/Alamofire">Alamofire</a>简单封装，配合<a href="https://github.com/ReactiveX/RxSwift">RxSwift</a>可以很简单的实现一个网络请求，并且完成数据解析对应的 Mode 实体类，如下所示，即可实现一个用户登录的网络请求。</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre> <span class="n">input</span><span class="o">.</span><span class="n">loginTaps</span>
+            <span class="o">.</span><span class="nf">withLatestFrom</span><span class="p">(</span><span class="kt">Observable</span><span class="o">.</span><span class="nf">combineLatest</span><span class="p">(</span><span class="n">input</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">input</span><span class="o">.</span><span class="n">password</span><span class="p">)</span> <span class="p">{</span> <span class="p">(</span><span class="nv">$0</span><span class="p">,</span> <span class="nv">$1</span><span class="p">)</span> <span class="p">})</span>
+            <span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="kt">Carlisle_api</span><span class="o">.</span><span class="nf">login</span><span class="p">(</span><span class="nv">phone</span><span class="p">:</span> <span class="nv">$0</span><span class="p">,</span> <span class="nv">password</span><span class="p">:</span> <span class="nv">$1</span><span class="p">)}</span>
+            <span class="o">.</span><span class="nf">emeRequestApiForObj</span><span class="p">(</span><span class="kt">User_Model</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">activityIndicator</span><span class="p">:</span> <span class="n">loading</span><span class="p">)</span>
+            <span class="o">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="nv">onNext</span><span class="p">:</span> <span class="p">{[</span><span class="k">unowned</span> <span class="k">self</span><span class="p">]</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">in</span>
+                <span class="k">switch</span> <span class="n">result</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">user</span><span class="p">):</span>
+                    <span class="c1">//登陆成功就更新上下文中的登陆对象</span>
+                    <span class="kt">Global</span><span class="o">.</span><span class="nf">updateUserModel</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+                    <span class="k">self</span><span class="o">.</span><span class="n">loginSuccess</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+                <span class="k">case</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">):</span>
+                    <span class="k">self</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="nf">onNext</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">})</span>
+            <span class="o">.</span><span class="nf">disposed</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="n">disposeBag</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="模块路由">模块路由</h2>
+
+<p>Swift 下一直使用<a href="https://github.com/devxoul/URLNavigator">URLNavigator</a>作为模块之间的路由框架使用，感觉非常方便</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+</pre></td><td class="rouge-code"><pre><span class="kd">extension</span> <span class="kt">String</span> <span class="p">{</span>
+    <span class="c1">/// 返回路由路径</span>
+    <span class="c1">///</span>
+    <span class="c1">/// - Parameter param: 请求参数</span>
+    <span class="kd">public</span> <span class="kd">func</span>  <span class="nf">getUrlStr</span><span class="p">(</span><span class="nv">param</span><span class="p">:[</span><span class="kt">String</span><span class="p">:</span><span class="kt">String</span><span class="p">]?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">that</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">removingPercentEncoding</span> <span class="p">??</span> <span class="k">self</span>
+        <span class="k">let</span> <span class="nv">appScheme</span> <span class="o">=</span> <span class="kt">Navigator</span><span class="o">.</span><span class="n">scheme</span>
+        <span class="k">let</span> <span class="nv">relUrl</span> <span class="o">=</span> <span class="s">"</span><span class="se">\(</span><span class="n">appScheme</span><span class="se">)</span><span class="s">://</span><span class="se">\(</span><span class="n">that</span><span class="se">)</span><span class="s">"</span>
+        <span class="k">guard</span> <span class="n">param</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">relUrl</span>
+        <span class="p">}</span>
+        <span class="k">var</span> <span class="nv">paramArr</span><span class="p">:[</span><span class="kt">String</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">key</span> <span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">in</span> <span class="n">param</span><span class="o">!</span><span class="p">{</span>
+            <span class="n">paramArr</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="s">"</span><span class="se">\(</span><span class="n">key</span><span class="se">)</span><span class="s">=</span><span class="se">\(</span><span class="n">value</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">let</span> <span class="nv">rel</span> <span class="o">=</span> <span class="n">paramArr</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">"&amp;"</span><span class="p">)</span>
+        <span class="k">guard</span> <span class="n">rel</span><span class="o">.</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span>  <span class="n">relUrl</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">relUrl</span> <span class="o">+</span> <span class="s">"?</span><span class="se">\(</span><span class="n">rel</span><span class="se">)</span><span class="s">"</span>
+    <span class="p">}</span>
+    <span class="c1">/// 直接通过路径 和参数调整到 界面</span>
+    <span class="kd">public</span> <span class="kd">func</span> <span class="nf">openURL</span><span class="p">(</span> <span class="n">_</span> <span class="nv">param</span><span class="p">:[</span><span class="kt">String</span><span class="p">:</span><span class="kt">String</span><span class="p">]?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+        <span class="k">let</span> <span class="nv">that</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">removingPercentEncoding</span> <span class="p">??</span> <span class="k">self</span>
+        <span class="c1">/// 为了使html的文件通用 需要判断是否以http或者https开头</span>
+        <span class="k">guard</span> <span class="n">that</span><span class="o">.</span><span class="nf">hasPrefix</span><span class="p">(</span><span class="s">"http"</span><span class="p">)</span> <span class="o">||</span> <span class="n">that</span><span class="o">.</span><span class="nf">hasPrefix</span><span class="p">(</span><span class="s">"https"</span><span class="p">)</span> <span class="o">||</span> <span class="n">that</span><span class="o">.</span><span class="nf">hasPrefix</span><span class="p">(</span><span class="s">"</span><span class="se">\(</span><span class="kt">Navigator</span><span class="o">.</span><span class="n">scheme</span> <span class="se">)</span><span class="s">://"</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">var</span> <span class="nv">url</span> <span class="o">=</span> <span class="s">""</span>
+            <span class="c1">///如果以 '/'开头则需要加上本服务域名</span>
+            <span class="k">if</span> <span class="n">that</span><span class="o">.</span><span class="nf">hasPrefix</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="kt">UtilCore</span><span class="o">.</span><span class="n">sharedInstance</span><span class="o">.</span><span class="n">baseUrl</span> <span class="o">+</span> <span class="n">that</span>
+            <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="n">that</span><span class="o">.</span><span class="nf">getUrlStr</span><span class="p">(</span><span class="nv">param</span><span class="p">:</span> <span class="n">param</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="c1">// 首先需要判断跳转的目标是否是界面还是处理事件 如果是界面需要: push 如果是事件则需要用:open</span>
+            <span class="k">let</span> <span class="nv">isPushed</span> <span class="o">=</span> <span class="kt">Navigator</span><span class="o">.</span><span class="n">that</span><span class="p">?</span><span class="o">.</span><span class="nf">push</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">nil</span>
+            <span class="k">if</span> <span class="n">isPushed</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">true</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nf">return</span> <span class="p">(</span><span class="kt">Navigator</span><span class="o">.</span><span class="n">that</span><span class="p">?</span><span class="o">.</span><span class="nf">open</span><span class="p">(</span><span class="n">url</span><span class="p">))</span> <span class="p">??</span> <span class="kc">false</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="c1">// 首先需要判断跳转的目标是否是界面还是处理事件 如果是界面需要: push 如果是事件则需要用:open</span>
+        <span class="k">let</span> <span class="nv">isPushed</span> <span class="o">=</span> <span class="kt">Navigator</span><span class="o">.</span><span class="n">that</span><span class="p">?</span><span class="o">.</span><span class="nf">push</span><span class="p">(</span><span class="n">that</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">nil</span>
+        <span class="k">if</span> <span class="n">isPushed</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">true</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nf">return</span> <span class="p">(</span><span class="kt">Navigator</span><span class="o">.</span><span class="n">that</span><span class="p">?</span><span class="o">.</span><span class="nf">open</span><span class="p">(</span><span class="n">that</span><span class="p">))</span> <span class="p">??</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这块其实可以更进一步的封装，比如每次调整都可以通过正则表达式进行有效性的验证，或者一些其他路由规则判断</p>
+
+<p>借助<a href="https://github.com/devxoul/URLNavigator">URLNavigator</a>实现各个模块的解耦，理论上每个界面都可以实现互相跳转的，在处理商品列表界面的行点击事件(<code class="language-plaintext highlighter-rouge">didSelectRowAt</code>)的时候是由服务端返回的<code class="language-plaintext highlighter-rouge">uri</code>字段决定的，具体跳转哪个界面是有服务端决定的，个人的理解是界面负责产生信号，每个信号都会经过复杂的筛选变化又会反应到界面上的，所有的跳转事件都可以通过 <code class="language-plaintext highlighter-rouge">URLNavigator</code> 路由实现，比如逻辑处理、界面跳转等事件</p>
+
+<p>每个模块都有各自的模块路由注册类，比如<code class="language-plaintext highlighter-rouge">Jacob_router.swift</code>，包含了该模块内部所有的可路由的界面和事件处理的路由注册，最后会在主模块中统一注册</p>
+
+<h2 id="错误处理">错误处理</h2>
+
+<p>监控整个 App 的所有错误，然后通过一些规则筛选最后展示给用户是我们在开发一个 App 的时候需要考虑处理的，比如在下拉列表的时候，发送网络请求，这时候网络请求失败了，需要界面上展示网络错误，并且显示重新加载的按钮，或者是如果在调用相机获取授权的时用户没有授权的时候，需要提示给用户授权相关的信息，等等这些逻辑处理都可以通过流的形式处理，在处理用户网络错误加载失败的时候，通过 <code class="language-plaintext highlighter-rouge">RxSwift</code> 的一个很简单的 Api:<code class="language-plaintext highlighter-rouge">withLatestFrom</code>就能实现数据重新加载，而不需要记住各种复杂的参数。</p>
+
+<p>根据错误码的不同进行不同的错误逻辑处理，如下代码所示</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre></td><td class="rouge-code"><pre><span class="cm">/**
+     通过 mikerError 显示错误信息
+     202024： 请登录后再操作
+     - parameter error:
+     */</span>
+    <span class="kd">public</span> <span class="kd">func</span> <span class="nf">toastError</span><span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span><span class="kt">MikerError</span><span class="p">){</span>
+        <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="kt">UtilCore</span><span class="o">.</span><span class="n">sharedInstance</span><span class="o">.</span><span class="n">toLoginErrorCode</span> <span class="p">{</span>
+            <span class="k">self</span><span class="o">.</span><span class="nf">toastCompletion</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">){</span> <span class="n">_</span> <span class="k">in</span>
+                <span class="cm">/**
+                 *  在这块 就是跳转到登陆模块,如果已经跳转就不需要直接忽略 否则 先将AppData.sharedInstance.isHasToLoginVc改为true然后再跳转
+                 */</span>
+                <span class="k">if</span> <span class="kt">UtilCore</span><span class="o">.</span><span class="n">sharedInstance</span><span class="o">.</span><span class="n">isHasToLoginVc</span> <span class="o">==</span> <span class="kc">false</span> <span class="p">{</span>
+                    <span class="n">_</span> <span class="o">=</span> <span class="s">"login"</span><span class="o">.</span><span class="nf">openURL</span><span class="p">()</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="kt">UtilCore</span><span class="o">.</span><span class="n">sharedInstance</span><span class="o">.</span><span class="n">toForcedupdatingErrorCode</span> <span class="p">{</span>
+            <span class="cm">/*
+            表示版本强制更新
+             */</span>
+            <span class="k">if</span> <span class="kt">UtilCore</span><span class="o">.</span><span class="n">sharedInstance</span><span class="o">.</span><span class="n">isHasForcedupdating</span> <span class="o">==</span> <span class="kc">false</span> <span class="p">{</span>
+                <span class="kt">UtilCore</span><span class="o">.</span><span class="n">sharedInstance</span><span class="o">.</span><span class="n">isHasForcedupdating</span> <span class="o">=</span> <span class="kc">true</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="s">"forcedupdating"</span><span class="o">.</span><span class="nf">openURL</span><span class="p">([</span><span class="s">"message"</span><span class="p">:</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">])</span>
+            <span class="p">}</span>
+
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="kt">UtilCore</span><span class="o">.</span><span class="n">sharedInstance</span><span class="o">.</span><span class="n">isDebug</span> <span class="p">{</span>
+                <span class="k">self</span><span class="o">.</span><span class="nf">toast</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                 <span class="c1">///表示是生产模式</span>
+                <span class="k">let</span> <span class="nv">code</span> <span class="o">=</span> <span class="s">"</span><span class="se">\(</span><span class="n">error</span><span class="o">.</span><span class="n">code</span><span class="se">)</span><span class="s">"</span>
+                <span class="k">if</span> <span class="n">code</span><span class="o">.</span><span class="nf">hasPrefix</span><span class="p">(</span><span class="s">"2"</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">self</span><span class="o">.</span><span class="nf">toast</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="k">self</span><span class="o">.</span><span class="nf">toast</span><span class="p">(</span><span class="kt">UtilCore</span><span class="o">.</span><span class="n">sharedInstance</span><span class="o">.</span><span class="n">errorMsg</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="指令码">指令码</h3>
+
+<p>与服务端确认配合确定，通过<code class="language-plaintext highlighter-rouge">错误码</code>与<code class="language-plaintext highlighter-rouge">路由</code>结合能达到一种指令码的效果，客户端取到服务端返回的<code class="language-plaintext highlighter-rouge">错误码</code>的时候先进行逻辑判断，适配一些规则，如果符合则取服务端返回的<code class="language-plaintext highlighter-rouge">uri</code>字段，直接进行路由跳转，否则走错误处理抛出。这种<code class="language-plaintext highlighter-rouge">指令码</code>可以达到一些客户端的跳转逻辑交由服务端来控制，比如在注册完毕之后是跳转首页还是继续补充完详细信息的这种需求是可以根据服务端返回的<code class="language-plaintext highlighter-rouge">指令码</code>来决定。</p>
+
+<h2 id="mvvm-架构设计">MVVM 架构设计</h2>
+
+<p>一直觉得<a href="http://southpeak.github.io/">南峰子</a>翻译的这两篇文章挺不错的虽然是 2014 的文章了，感兴趣的可以看下</p>
+
+<ul>
+  <li><a href="http://southpeak.github.io/2014/08/08/mvvm-tutorial-with-reactivecocoa-1/">MVVM Tutorial with ReactiveCocoa: Part 1/2</a></li>
+  <li>
+    <p><a href="http://southpeak.github.io/2014/08/12/mvvm-tutorial-with-reactivecocoa-2/">MVVM Tutorial with ReactiveCocoa: Part 2/2</a></p>
+
+    <p><img src="/images/20190413/mvvm.png" alt="mvvm" /></p>
+  </li>
+</ul>
+
+<p>另外<code class="language-plaintext highlighter-rouge">登陆注册模块(Carlisle)</code>是参考<a href="https://github.com/ReactiveX/RxSwift">RxSwift</a>官方 Demo 设计的，使用 MVVM 架构设计，虽然没有严格遵守上面文章所说的 MVVM 引用层次，不过<code class="language-plaintext highlighter-rouge">登陆注册模块(Carlisle)</code>还是可以灵活的适用于不同的需求的在简单修改之后。</p>
+
+<h2 id="gckit-cli-的使用">Gckit-CLI 的使用</h2>
+
+<p>CocoaPods 公共组件模块可以很方便集成现有的模块，但是我们每个业务都是完全不一样的，每个接口返回的 JSON 文件也不一样，然后我们得手动创建与之对应的 Model，这些操作完全没有任何意义但是又是必须的，不过现在我们可以使用 <a href="https://github.com/SeongBrave/gckit">Gckit-CLI</a> 一键生成对应的所有 Model 实体类，我们只需要把对应的 JSON 文件放到对应的目录即可，<a href="https://github.com/SeongBrave/gckit">Gckit-CLI</a> 不仅可以生成 Model 文件，ViewModel、ViewController、View、Cell 等各种文件，并且是一键生成，大家可以尝试使用下，如果觉得可以的话麻烦给一个<strong>Star</strong>吧 😂。</p>
+
+<h2 id="nodejs-接口服务">Node.js 接口服务</h2>
+
+<p><a href="https://github.com/SeongBrave/twilight_app">twilight_app</a> 为项目后台的接口服务，一个客户端开发的思维开发的后台接口服务 😂，功能很简单，如果感兴趣的可以下载看下</p>
+
+<h2 id="总结">总结</h2>
+
+<p>本文简单介绍了自己在 Swift 模块化项目中的一些实践经验，借助 RxSwift 实现 MVVM 框架的设计，内容比较杂，供大家参考，随着 Swift 5 的发布，Swift ABI 的稳定，相信会有更多团队会选择 Swift 语言开发自己的 App 的， 周围认识的很多朋友都说如果尝试过 Swift 之后就很难再回去用 Objective-C 了，Swift 本身带有的很多特性是 Objective-C 不具有的，呀感觉又扯远了，我个人比较喜欢通过一些工具去实现一些效率方面的提升的，通过模块化实现代码的复用，通过一些脚本工具实现重复无用代码的自动生成，比如 Model 文件的生成等，这样我们通过借助 CocoaPods 和 <a href="https://github.com/SeongBrave/gckit">Gckit-CLI</a> 结合使用，使我们的开发效率大大提高了，节省出来的时间我们专注于业务功能的开发。</p>
+
+<p>🤝 最后感谢您的阅读!</p>
+:ET

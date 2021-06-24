@@ -1,0 +1,259 @@
+I"�V<p>#####1、git学习</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">cd</span>  <span class="n">gitDemo</span>
+<span class="err">查看是否有</span><span class="n">git</span>  <span class="err">：</span> <span class="n">git</span> <span class="n">remote</span> <span class="o">-</span><span class="n">v</span>
+<span class="n">git</span> <span class="n">init</span> 
+<span class="n">git</span> <span class="n">add</span> <span class="p">.</span> 
+<span class="nf">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s1">'xxxxx'</span>
+<span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">github</span><span class="p">.</span><span class="nf">com</span><span class="o">/</span><span class="n">lc5491137</span><span class="o">/</span><span class="mi">1111</span><span class="p">.</span><span class="nf">git</span>
+<span class="n">git</span> <span class="n">push</span> <span class="o">-</span><span class="n">u</span> <span class="n">origin</span> <span class="n">master</span></code></pre></figure>
+
+<p>#####2、首先创建一个远程仓库，得到远程仓库地址</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="err">进入本地目录</span> <span class="n">git</span> <span class="n">init</span><span class="err">初始化</span><span class="n">git</span>
+<span class="n">git</span> <span class="n">add</span> <span class="o">.</span><span class="err">添加当前目录下的所有文件和文件夹</span>
+<span class="err">添加提交信息</span><span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">"first commit"</span><span class="err">，这时候并未真正的提交到服务器</span>
+<span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">github</span><span class="p">.</span><span class="nf">com</span><span class="o">/</span><span class="n">lc5491137</span><span class="o">/</span><span class="mi">1111</span><span class="p">.</span><span class="nf">git</span><span class="err">添加远端仓库，</span><span class="n">origin</span><span class="err">是默认仓库的名称。</span>
+<span class="err">提交到远端仓库</span><span class="n">master</span><span class="err">分支</span><span class="n">git</span> <span class="n">push</span> <span class="o">-</span><span class="n">u</span> <span class="n">origin</span> <span class="n">master</span><span class="err">，</span><span class="o">-</span><span class="n">u</span><span class="err">表示以后提交都是默认到</span><span class="n">origin</span><span class="err">的</span><span class="n">master</span><span class="err">分支上</span>
+<span class="err">之后提交顺序为</span></code></pre></figure>
+
+<p>#####3、几点说明</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="o">-</span><span class="n">u</span><span class="err">表示以后提交都是默认到</span><span class="n">origin</span><span class="err">的</span><span class="n">master</span><span class="err">分支上</span>
+<span class="ss">origin: </span><span class="err">远程仓库的别名</span>
+<span class="ss">master: </span><span class="err">主分支</span>
+
+<span class="n">git</span> <span class="n">add</span> <span class="p">.</span>
+<span class="nf">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s1">'xxxxx'</span>
+<span class="n">git</span> <span class="n">push</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>添加电脑上的 公钥 查看是否存在公钥：ls -al ~/.ssh 生成密钥：ssh-keygen -t rsa -C "your_email@example.com"，一路回车键 eval "$(ssh-agent -s)" ssh-add ~/.ssh/id_rsa 复制公钥：pbcopy &lt; ~/.ssh/id_rsa.pub
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>**： pbcopy &lt; ~/.ssh/id_rsa.pub 复制 公钥  复制完了然后再 https://coding.net/user/setting/keys 添加公密</p>
+
+<p>windows上补充：
+参考地址 http://blog.csdn.net/zhandoushi1982/article/details/8464548</p>
+
+<p>（7）git config：查询和修改配置。当使用git时反馈*** Please tell me who you are，说明个人账户没有配置。git的配置文件；一共有三个：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td> --><td class="rouge-code"><pre>        A，/etc/gitconfig: 所有用户普遍适用的、系统的，git config --system选项
+        B，~/.gitconfig： 只适用该用户， git config --global选项
+        C，.git/config当前项目.git目录中，只适用当前项目， .git/config 
+        每一层都覆盖上一层，也就是优先级  .gitconfig  &gt;  ~/.gitconfig  &gt;  /etc/gitconfig。配置内容：A，用户信息：包括个人用户名称和电子邮件名称；B，文本编辑器：设置在需要打开文本编辑器来输入某些信息时默认编辑器，例如vi、 vim、 emacs等；C，差异分析工具：在解决合并冲突时使用哪种差异分析工具。比如vimdiff；
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>[cpp] view plaincopy在CODE上查看代码片派生到我的代码片</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="n">global</span> <span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="s2">"个人用户名称"</span>  
+<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="n">global</span> <span class="n">user</span><span class="p">.</span><span class="nf">email</span> <span class="err">电子邮件</span>  
+<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="n">global</span> <span class="n">core</span><span class="p">.</span><span class="nf">editor</span> <span class="n">vim</span>  
+<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="n">global</span> <span class="n">merge</span><span class="p">.</span><span class="nf">tool</span> <span class="n">vimdiff</span>  </code></pre></figure>
+
+<p>git继续学习    2015年01月29日09:20:20</p>
+
+<p>git查看历史版本信息 ：git  reflog
+恢复某一版本
+git reset –hard xxxxx    xxxxx是版本号</p>
+
+<p>git继续学习    2015年02月01日10:02:42
+参考demo地址: http://www.netfoucs.com/article/han1202012/64551.html</p>
+
+<p>git rm –cached 删除某一个文件</p>
+
+<p>分享git的几个小技巧，后面会根据使用补充。目前包括git撤销本地修改、git回退到前n个版本、git多用户提交冲突解决、git 命令简化。欢迎大家补充^_*</p>
+
+<p>#####1、git撤销本地修改</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">git</span> <span class="n">reset</span> <span class="o">--</span><span class="n">hard</span> <span class="n">origin</span><span class="o">/</span><span class="n">master</span>
+<span class="n">git</span> <span class="n">pull</span></code></pre></figure>
+
+<p>#####2、git回退到前n个版本</p>
+
+<p>如下为向前回退3个版本，git reset –hard HEAD~3</p>
+
+<p>#####3、git多用户提交冲突一
+场景：用户UserA修改了文件File1，用户UserB也修改了文件File1并成功merge到了服务器上，而UserA和UserB改动了同一个代码块，当UserA拉取代码时git无法merge此改动，就会出现如下错误提示，
+error: Your local changes to the following files would be overwritten by merge: cn/trinea/appsearch/MainActivity.java
+Please, commit your changes or stash them before you can merge.
+这时</p>
+
+<p>######(1) 如果希望保存本地改动并拉下最新服务器代码，手动merge，使用命令如下：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">git</span> <span class="n">stash</span>
+<span class="n">git</span> <span class="n">pull</span>
+<span class="n">git</span> <span class="n">stash</span> <span class="n">pop</span>
+<span class="n">git</span> <span class="n">diff</span> <span class="o">-</span><span class="n">w</span> <span class="n">cn</span><span class="o">/</span><span class="n">trinea</span><span class="o">/</span><span class="n">appsearch</span><span class="o">/</span><span class="no">MainActivity</span><span class="p">.</span><span class="nf">java</span></code></pre></figure>
+
+<p>其中git stash表示备份当前工作区内容到git栈中，并使当前工作区内容与上次提交时一致，然后git pull拉取最新代码，git stash pop表示从Git栈中读取最近一次保存的内容，恢复工作区的相关内容，最后git diff表示手动merge你之前冲突的文件</p>
+
+<p>######(2) 如果希望服务器上版本完全覆盖本地修改，使用如下命令回退并更新：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">git</span> <span class="n">reset</span> <span class="o">--</span><span class="n">hard</span>
+<span class="n">git</span> <span class="n">pull</span></code></pre></figure>
+
+<p>#####4、git多用户提交冲突二</p>
+
+<p>场景：用户UserA修改了文件File1，用户UserB也修改了文件File1并成功merge到了服务器上，而UserA和UserB改动了同一个代码块，当UserA拉取代码时git无法merge此改动，就会出现如下错误提示，
+error: Your local changes to the following files would be overwritten by merge: cn/trinea/appsearch/MainActivity.java
+Please, commit your changes or stash them before you can merge.
+这时</p>
+
+<p>######(1) 如果希望保存本地改动并拉下最新服务器代码，手动merge，使用命令如下：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">git</span> <span class="n">stash</span>
+<span class="n">git</span> <span class="n">pull</span>
+<span class="n">git</span> <span class="n">stash</span> <span class="n">pop</span>
+<span class="n">git</span> <span class="n">diff</span> <span class="o">-</span><span class="n">w</span> <span class="n">cn</span><span class="o">/</span><span class="n">trinea</span><span class="o">/</span><span class="n">appsearch</span><span class="o">/</span><span class="no">MainActivity</span><span class="p">.</span><span class="nf">java</span></code></pre></figure>
+
+<p>其中git stash表示备份当前工作区内容到git栈中，并使当前工作区内容与上次提交时一致，然后git pull拉取最新代码，git stash pop表示从Git栈中读取最近一次保存的内容，恢复工作区的相关内容，最后git diff表示手动merge你之前冲突的文件</p>
+
+<p>######(2) 如果希望服务器上版本完全覆盖本地修改，使用如下命令回退并更新：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">git</span> <span class="n">reset</span> <span class="o">--</span><span class="n">hard</span>
+<span class="n">git</span> <span class="n">pull</span></code></pre></figure>
+
+<p>#####4、git多用户提交冲突二</p>
+
+<p>场景：用户UserA提交了change A，没有merge，之后用户UserB提交了change B，merge成功。当merge change A时出错，会提示，
+The change could not be merged due to a path conflict.
+Please rebase the change locally and upload the rebased commit for review.</p>
+
+<p>大多数人的解决方式都是拷贝改动代码，并重拉最新代码Beyond Compare，重新提交。其实几条命令就可以搞定，gerrit上先abandon原来的提交，后执行如下命令：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">git</span> <span class="n">reset</span> <span class="o">--</span><span class="n">hard</span> <span class="no">HEAD</span><span class="o">~</span><span class="mi">2</span>
+<span class="n">git</span> <span class="n">pull</span>
+<span class="n">git</span> <span class="n">fetch</span> <span class="n">ssh</span><span class="ss">:/</span><span class="o">/</span><span class="n">xxxx</span> <span class="n">refs</span><span class="o">/</span><span class="n">changes</span><span class="o">/</span><span class="mi">46</span><span class="o">/</span><span class="mi">28146</span><span class="o">/</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">git</span> <span class="n">cherry</span><span class="o">-</span><span class="n">pick</span> <span class="no">FETCH_HEAD</span>
+<span class="n">git</span> <span class="n">push</span> <span class="n">gerrit</span><span class="ss">:xxxxxx</span> <span class="no">HEAD</span><span class="ss">:refs</span><span class="o">/</span><span class="k">for</span><span class="sr">/xxxxxx</span></code></pre></figure>
+
+<p>其中git reset –hard HEAD~2表示本地代码后退两级，如果有问题可以多后退几次</p>
+
+<p>git pull表示拉最新代码
+git fetch 表示获取之前没merge成功的改动到本地，后面跟的具体地址为gerrit上该change review页面选择cherry-pick、ssh后的地址，如下图红线标识</p>
+
+<p>git push 跟平时push一样</p>
+
+<p>#####5、git命令简化</p>
+
+<p>######(1) 简化git push命令</p>
+
+<p>通常git push命令为git push gerrit:aaa HEAD:refs/for/bbb，其实可简化为git push。
+编辑git库下的.git/config文件，在[remote “remoteName”]下添加两行</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="n">pushurl</span><span class="o">=</span><span class="n">gerrit</span><span class="ss">:aaa</span><span class="p">.</span><span class="nf">git</span>
+<span class="n">push</span><span class="o">=</span><span class="no">HEAD</span><span class="ss">:refs</span><span class="o">/</span><span class="k">for</span><span class="sr">/bbb</span></code></pre></figure>
+
+<p>以后提交只需要用git push即可。</p>
+
+<p>######(2) 简化git add *;git commit -a;git push命令，一步完成添加、commit、push</p>
+
+<p>第(1)步配好后，你还可以将命令git add *;git commit -a;git push添加别名到系统path中，如下操作：
+vim ~/.bash_profile，文件最后添加</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+<span class="sr">/# add by trinea.cn for git simplify
+alias gpush='git add *;git commit -a;git push'</span></code></pre></figure>
+
+<p>source ~/.bash_profile</p>
+
+<p>这样以后只需要gpush即可完成添加、commit、push，当然你也可以取其他的别名如gp、gitpush、gitp。</p>
+
+<h2 id="001新添加内容">001、新添加内容</h2>
+
+<h6 id="1git安装的配置">1、git安装的配置</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="n">global</span> <span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="s2">"your name"</span>
+<span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="n">global</span> <span class="n">user</span><span class="p">.</span><span class="nf">email</span> <span class="s2">"your email"</span></code></pre></figure>
+
+<h6 id="2初始化git仓库">2、初始化git仓库</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">init</span></code></pre></figure>
+
+<h6 id="3添加文件到git仓库">3、添加文件到git仓库</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">add</span> <span class="n">file1</span>  <span class="sr">//</span><span class="err">添加f</span><span class="sr">i</span><span class="n">le1</span>
+<span class="n">git</span> <span class="p">.</span>          <span class="nf">/</span><span class="o">/</span><span class="err">添加当前目录所有文件</span>
+<span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">"add file1"</span>  <span class="o">/</span><span class="sr">/-m 后面接的是提交代码的备注</span></code></pre></figure>
+
+<h6 id="4查看仓库当前状态">4、查看仓库当前状态</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">status</span> </code></pre></figure>
+
+<h6 id="5查看某个修改的内容">5、查看某个修改的内容</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">diff</span> <span class="o">&lt;</span><span class="n">file</span><span class="o">&gt;</span>  </code></pre></figure>
+
+<h6 id="6版本切换">6、版本切换</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">reset</span> <span class="o">--</span><span class="n">hard</span> <span class="no">HEAD</span><span class="o">^</span>  <span class="sr">//</span><span class="err">回退到上个版本
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">reset</span> <span class="o">--</span><span class="n">hard</span> <span class="n">commit_id</span>  <span class="sr">//</span><span class="err">切换到某个特定的版本
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">reflog</span>    <span class="sr">//</span><span class="err">查看历史命令</span></code></pre></figure>
+
+<h6 id="7撤销修改">7、撤销修改</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">checkout</span> <span class="o">--</span> <span class="o">&lt;</span><span class="n">file</span><span class="o">&gt;</span>  <span class="sr">//</span><span class="err">撤销工作区的修改
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">reset</span> <span class="no">HEAD</span> <span class="o">&lt;</span><span class="n">file</span><span class="o">&gt;</span>   <span class="sr">//</span><span class="err">将暂存区的修改退回到工作区</span></code></pre></figure>
+
+<h6 id="8删除文件">8、删除文件</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">rm</span> <span class="o">&lt;</span><span class="n">file</span><span class="o">&gt;</span>
+<span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">"remove file"</span></code></pre></figure>
+
+<h6 id="9分支使用">9、分支使用</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">branch</span>  <span class="sr">//</span><span class="err">查看分支
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">branch</span> <span class="o">&lt;</span><span class="n">branch_name</span><span class="o">&gt;</span>   <span class="sr">//</span><span class="err">创建分支
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">checkout</span> <span class="o">&lt;</span><span class="n">branch_name</span><span class="o">&gt;</span>  <span class="sr">//</span><span class="err">切换分支
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">merge</span> <span class="o">&lt;</span><span class="n">branch_name</span><span class="o">&gt;</span>   <span class="sr">//</span><span class="err">合并某分支到当前分支
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">branch</span> <span class="o">-</span><span class="n">d</span> <span class="o">&lt;</span><span class="n">branch_name</span><span class="o">&gt;</span>  <span class="sr">//</span><span class="err">删除分支
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">merge</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">ff</span> <span class="o">-</span><span class="n">m</span> <span class="s2">"merge"</span> <span class="o">&lt;</span><span class="n">branch_name</span><span class="o">&gt;</span>  <span class="sr">//</span><span class="err">这样合并分支时不会丢掉分支信息</span></code></pre></figure>
+
+<h6 id="10存储工作现场">10、存储工作现场</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">stash</span>  <span class="sr">//</span><span class="err">存储工作现场
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">stash</span> <span class="n">pop</span>  <span class="sr">//</span><span class="err">恢复工作现场</span></code></pre></figure>
+
+<h6 id="11向远程库推送修改">11、向远程库推送修改</h6>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"> 
+
+<span class="n">git</span> <span class="n">pull</span>  <span class="sr">//</span><span class="err">合并更新
+g</span><span class="sr">i</span><span class="n">t</span> <span class="n">push</span> <span class="n">origin</span> <span class="o">&lt;</span><span class="n">branch_name</span><span class="o">&gt;</span>  <span class="sr">//</span><span class="err">推送修改到远程库</span></code></pre></figure>
+
+:ET

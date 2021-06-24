@@ -1,0 +1,43 @@
+I"�<p>简单教程:</p>
+
+<h2 id="简单教程">简单教程</h2>
+
+<p>###1、首先需要安装 pm2：
+<code class="language-plaintext highlighter-rouge">npm install -g pm2</code>
+###2、运行：
+pm2 start app.js`</p>
+
+<h2 id="查看运行状态">查看运行状态</h2>
+
+<h3 id="1-我们可以通过简单的命令查看应用的运行状态">1、 我们可以通过简单的命令查看应用的运行状态：</h3>
+
+<p><code class="language-plaintext highlighter-rouge">pm2 list</code></p>
+
+<h3 id="2-追踪资源运行情况">2、 追踪资源运行情况：</h3>
+
+<p><code class="language-plaintext highlighter-rouge">pm2 monit</code></p>
+
+<h3 id="3-查看应用详细部署状态">3、 查看应用详细部署状态</h3>
+
+<p>如果我们想要查看一个应用详细的运行状态，比如 ANodeBlog 的状态，可以运行：
+<code class="language-plaintext highlighter-rouge">pm2 describe [app id]</code></p>
+
+<h3 id="4查看日志">4、查看日志</h3>
+
+<p><code class="language-plaintext highlighter-rouge">pm2 logs</code>
+系统会打印出详细的 logs。</p>
+
+<h3 id="5重启应用">5、重启应用</h3>
+
+<p><code class="language-plaintext highlighter-rouge">pm2 restart [app id]</code></p>
+
+<h3 id="6停止应用">6、停止应用</h3>
+
+<p>想要终止应用，只需要运行：
+<code class="language-plaintext highlighter-rouge">pm2 stop [app id]</code></p>
+
+<h3 id="7强健的-api">7、强健的 API</h3>
+
+<p>在项目中运行：
+<code class="language-plaintext highlighter-rouge">pm2 web</code></p>
+:ET

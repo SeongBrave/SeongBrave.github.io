@@ -1,0 +1,71 @@
+I"j<p>MVVM:</p>
+
+<p>###1、ReactiveCacoa基础资料</p>
+
+<ul>
+  <li><a href="http://blog.sunnyxx.com/2014/04/19/rac_4_filters/">filters</a></li>
+  <li><a href="http://blog.sunnyxx.com/2014/03/06/rac_3_racsignal/">racsigna</a></li>
+  <li><a href="http://blog.sunnyxx.com/2014/03/06/rac_2_racstream/">racstream</a></li>
+  <li><a href="http://blog.sunnyxx.com/2014/03/06/rac_1_macros/">macros</a></li>
+  <li><a href="http://blog.csdn.net/womendeaiwoming/article/details/37597779">RACCommand</a></li>
+  <li><a href="http://bawn.github.io/ios/2014/09/28/RACCLASS.html">RAC基本类介绍</a></li>
+  <li><a href="http://bawn.github.io/ios/2015/03/26/ReactiveCocoa.html">ReactiveCocoa</a></li>
+  <li><a href="https://www.evernote.com/pub/lingchen621/reactivecocoa#st=p&amp;n=1cb2ca5d-dd33-4910-9572-85ca7011d44b">ReactiveCocoa资料</a></li>
+  <li><a href="http://southpeak.github.io/blog/2014/08/02/reactivecocoazhi-nan-%5B%3F%5D-:xin-hao/">ReactiveCocoa指南一：信号</a></li>
+  <li><a href="http://southpeak.github.io/blog/2014/08/02/reactivecocoazhi-nan-er-:twittersou-suo-shi-li/">ReactiveCocoa指南二：Twitter搜索实例</a></li>
+  <li><a href="https://github.com/ReactiveCocoa/ReactiveCocoa/blob/legacy-objc/Documentation/BasicOperators.md">ReactiveCocoa参考例子demo</a></li>
+  <li><a href="http://blog.csdn.net/womendeaiwoming/article/details/37597779"> ReactiveCocoa基本组件：理解和使用RACCommand</a></li>
+</ul>
+
+<p>###2、综合资料</p>
+<ul>
+  <li><a href="http://limboy.me/ios/2014/01/05/ios-rest-client-implementation.html">基于AFNetworking2.0和ReactiveCocoa2.1的iOS REST Client</a></li>
+  <li><a href="http://limboy.me/ios/2013/06/19/frp-reactivecocoa.html">ReactiveCocoa2实战</a></li>
+  <li><a href="http://blog.csdn.net/womendeaiwoming/article/details/48036725">ReactiveCocoa2 源码浅析</a></li>
+</ul>
+
+<p>###3、MVVM资料</p>
+
+<ul>
+  <li>南峰子的技术博客</li>
+  <li>
+    <ul>
+      <li><a href="http://southpeak.github.io/blog/2014/08/08/mvvmzhi-nan-yi-:flickrsou-suo-shi-li/">MVVM指南一：Flickr搜索实例</a></li>
+    </ul>
+  </li>
+  <li>
+    <ul>
+      <li><a href="http://southpeak.github.io/blog/2014/08/08/mvvmzhi-nan-yi-:flickrsou-suo-shi-li/">MVVM指南一：Flickr搜索实例</a></li>
+    </ul>
+  </li>
+  <li>Limboy</li>
+  <li>
+    <ul>
+      <li><a href="http://limboy.me/ios/2014/06/06/deep-into-reactivecocoa2.html">ReactiveCocoa2实战</a></li>
+    </ul>
+  </li>
+  <li>
+    <ul>
+      <li><a href="http://limboy.me/ios/2013/12/27/reactivecocoa-2.html">说说ReactiveCocoa 2</a></li>
+    </ul>
+  </li>
+  <li>唐巧博客</li>
+  <li>
+    <ul>
+      <li><a href="http://blog.devtang.com/blog/2014/02/11/reactivecocoa-introduction/">ReactiveCocoa - iOS开发的新框架</a></li>
+    </ul>
+  </li>
+  <li>听榆大叔的专栏</li>
+  <li>
+    <ul>
+      <li><a href="http://blog.csdn.net/womendeaiwoming/article/details/40519019">ReactiveCocoa理解持续更新中</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>##3、项目资料</p>
+<ul>
+  <li><a href="https://github.com/jspahrsummers/GroceryList">GroceryList</a></li>
+  <li><a href="https://github.com/ColinEberhardt/CETableViewBinding">CETableViewBinding</a></li>
+</ul>
+:ET

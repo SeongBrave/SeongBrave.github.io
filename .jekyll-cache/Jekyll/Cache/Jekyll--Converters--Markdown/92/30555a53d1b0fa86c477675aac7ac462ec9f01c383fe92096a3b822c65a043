@@ -1,0 +1,441 @@
+I"}�<p>git - 简明指南:</p>
+
+<h5 id="1检出仓库">1、检出仓库</h5>
+
+<p>执行如下命令以创建一个本地仓库的克隆版本：&lt;<code class="language-plaintext highlighter-rouge">sdafsdfsdf</code>&gt;</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="nb">clone</span> <span class="sr">/path/</span><span class="err">t</span><span class="sr">o</span><span class="o">/</span><span class="n">repository</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>如果是远端服务器上的仓库，你的命令会是这个样子：
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="nb">clone</span> <span class="n">username</span><span class="vi">@host</span><span class="ss">:/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">repository</span></code></pre></figure>
+
+<h5 id="2工作流">2、工作流</h5>
+
+<p>你的本地仓库由 git 维护的三棵“树”组成。第一个是你的<code class="language-plaintext highlighter-rouge">工作目录</code>，它持有实际文件；第二个是 <code class="language-plaintext highlighter-rouge">暂存区Index</code>，它像个缓存区域，临时保存你的改动；最后是<code class="language-plaintext highlighter-rouge">HEAD</code>，它指向你最后一次提交的结果。
+<img src="/images/gitAdvanced/trees.png" alt="1" /></p>
+
+<h4 id="3添加和提交">3、添加和提交</h4>
+
+<p>你可以提出更改（把它们添加到暂存区），使用如下命令：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">add</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;</span>
+<span class="n">git</span> <span class="n">add</span> <span class="p">\</span><span class="o">*</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>这是 git 基本工作流程的第一步；使用如下命令以实际提交改动：
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">"代码提交信息"</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>现在，你的改动已经提交到了 HEAD，但是还没到你的远端仓库。
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="3推送改动">3、推送改动</h4>
+
+<p>你的改动现在已经在本地仓库的 HEAD 中了。执行如下命令以将这些改动提交到远端仓库：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="n">master</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td> --><td class="rouge-code"><pre>可以把 master 换成你想要推送的任何分支。
+如果你还没有克隆现有仓库，并欲将你的仓库连接到某个远程服务器，你可以使用如下命令添加：
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="o">&lt;</span><span class="n">server</span><span class="o">&gt;</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre> 如此你就能够将你的改动推送到所添加的服务器上去了。
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="4分支">4、分支</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>分支是用来将特性开发绝缘开来的。在你创建仓库的时候，master 是`默认的分支`。在其他分支上进行开发，完成后再将它们合并到主分支上。
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/images/gitAdvanced/branches.png" alt="1" /></p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="err">创建一个叫做“</span><span class="n">feature_x</span><span class="err">”的分支，并切换过去：</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">feature_x</span>
+<span class="err">切换回主分支：</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">master</span>
+<span class="err">再把新建的分支删掉：</span>
+<span class="n">git</span> <span class="n">branch</span> <span class="o">-</span><span class="n">d</span> <span class="n">feature_x</span>
+<span class="err">除非你将分支推送到远端仓库，不然该分支就是</span> <span class="err">不为他人所见的：</span>
+<span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="o">&lt;</span><span class="n">branch</span><span class="o">&gt;</span></code></pre></figure>
+
+<h4 id="5更新与合并">5、更新与合并</h4>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="err">要更新你的本地仓库至最新改动，执行：</span>
+<span class="n">git</span> <span class="n">pull</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>以在你的工作目录中 获取（fetch） 并 合并（merge） 远端的改动。要合并其他分支到你的当前分支（例如 master），执行：
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">merge</span> <span class="o">&lt;</span><span class="n">branch</span><span class="o">&gt;</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>在这两种情况下，git 都会尝试去自动合并改动。遗憾的是，这可能并非每次都成功，并可能出现冲突（conflicts）。 这时候就需要你修改这些文件来手动合并这些冲突（conflicts）。改完之后，你需要执行如下命令以将它们标记为合并成功：
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">add</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;</span></code></pre></figure>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>在合并改动之前，你可以使用如下命令预览差异：
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">diff</span> <span class="o">&lt;</span><span class="n">source_branch</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">target_branch</span><span class="o">&gt;</span></code></pre></figure>
+
+<h4 id="6标签">6、标签</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>为软件发布创建标签是推荐的。这个概念早已存在，在 SVN 中也有。你可以执行如下命令创建一个叫做 1.0.0 的标签：
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">tag</span> <span class="mf">1.0</span><span class="o">.</span><span class="mi">0</span> <span class="mi">1</span><span class="n">b2e1d63ff</span>
+<span class="mi">1</span><span class="n">b2e1d63ff</span> <span class="err">是你想要标记的提交</span> <span class="no">ID</span> <span class="err">的前</span> <span class="mi">10</span> <span class="err">位字符。可以使用下列命令获取提交</span> <span class="no">ID</span><span class="err">：</span>
+<span class="n">git</span> <span class="n">log</span>
+<span class="err">你也可以使用少一点的提交</span> <span class="no">ID</span> <span class="err">前几位，只要它的指向具有唯一性。</span></code></pre></figure>
+
+<h4 id="6替换本地改动">6、替换本地改动</h4>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="err">假如你操作失误（当然，这最好永远不要发生），你可以使用如下命令替换掉本地改动：</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="o">--</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;</span>
+<span class="err">此命令会使用</span> <span class="no">HEAD</span> <span class="err">中的最新内容替换掉你的工作目录中的文件。已添加到暂存区的改动以及新文件都不会受到影响。</span>
+
+<span class="err">假如你想丢弃你在本地的所有改动与提交，可以到服务器上获取最新的版本历史，并将你本地主分支指向它：</span>
+<span class="n">git</span> <span class="n">fetch</span> <span class="n">origin</span>
+<span class="n">git</span> <span class="n">reset</span> <span class="o">--</span><span class="n">hard</span> <span class="n">origin</span><span class="o">/</span><span class="n">master</span></code></pre></figure>
+
+<h4 id="7实用小贴士">7、实用小贴士</h4>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="err">内建的图形化</span> <span class="n">git</span><span class="err">：</span>
+<span class="n">gitk</span>
+<span class="err">彩色的</span> <span class="n">git</span> <span class="err">输出：</span>
+<span class="n">git</span> <span class="n">config</span> <span class="n">color</span><span class="p">.</span><span class="nf">ui</span> <span class="kp">true</span>
+<span class="err">显示历史记录时，每个提交的信息只显示一行：</span>
+<span class="n">git</span> <span class="n">config</span> <span class="nb">format</span><span class="p">.</span><span class="nf">pretty</span> <span class="n">oneline</span>
+<span class="err">交互式添加文件到暂存区：</span>
+<span class="n">git</span> <span class="n">add</span> <span class="o">-</span><span class="n">i</span></code></pre></figure>
+
+<h4 id="7查看仓库">7、查看仓库</h4>
+
+<p>经常用于版本恢复，先查看仓库然后 reset</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">log</span> <span class="o">--</span><span class="n">oneline</span>
+<span class="err">或者用</span><span class="p">:</span>
+<span class="n">git</span> <span class="n">log</span> <span class="o">--</span><span class="n">oneline</span> <span class="o">--</span><span class="n">decorate</span> <span class="o">--</span><span class="n">graph</span> <span class="o">--</span><span class="n">all</span>
+<span class="err">然后</span>
+<span class="n">git</span> <span class="n">reset</span> <span class="o">--</span><span class="n">hard</span> <span class="n">xxxxx</span> <span class="n">xxxxx</span></code></pre></figure>
+
+<p>或者修改别名 查看历史记录
+执行:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">config</span> <span class="o">--</span><span class="n">global</span> <span class="k">alias</span><span class="p">.</span><span class="nf">lg</span> <span class="s2">"log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset' --abbrev-commit --date=relative"</span></code></pre></figure>
+
+<p>以后使用命令 : git lg 就可以查看历史版本了!</p>
+
+<h4 id="8-修改不用密码提交">8 、修改不用密码提交</h4>
+
+<p>1 、查看是否有生成秘药:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>ls -al ~/.ssh
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>2、如果已经生成 id_rsa.pub 则直接:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>pbcopy &lt; ~/.ssh/id_rsa.pub
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>否则</p>
+
+<p>```ssh-keygen -t rsa -C “youremail@example.com”
+然后一路回车,最后生成 然后拷贝</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td> --><td class="rouge-code"><pre>
+3、在远程仓储添加复制的公钥
+
+4、执行以下语句
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+<ol>
+  <li>git remote rm origin</li>
+  <li>git remote add origin git@github.com:yuquan0821/demo.git</li>
+  <li>git push origin
+```</li>
+</ol>
+
+<h4 id="9-与主干同步">9 、与主干同步</h4>
+
+<p>分支的开发过程中，要经常与主干保持同步。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td> --><td class="rouge-code"><pre>$ git fetch origin
+$ git rebase origin/master
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="10-添加标签-tag">10 、添加标签 tag</h4>
+
+<p><a href="http://caibaojian.com/github-create-tag.html">参考地址</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td> --><td class="rouge-code"><pre> git tag -a v1.0 -m '可以直接使用的项目'
+ -m后面带的就是注释信息，这样在日后查看的时候会很有用
+git push origin --tags
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="11指定-clone-分支">11、指定 clone 分支</h4>
+
+<p><a href="http://ask.chinaunix.net/question/1091">参考地址</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git clone -b cy git@git.coding.net:SeongBrave/myTest.git
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="进阶学习">进阶学习</h2>
+
+<h4 id="1configuration配置">1、Configuration(配置)</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git config [--global] user.name       设置提交时附带的名字(Set the name attached to all                                                                your commits)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git config [--global] user.email        设置提交时附带的email(Set the email attached to all                                                              your commits)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git config --global color.ui auto       设置命令行输出回执的颜色(Set colorzition of                                                                         command line output for all repos)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git config [--global] user.name         获取当前库设置的用户名(Print set name(in current                                                                repository or globally))
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git config [--global] user.email        获取当前库设置的email(Print set email(in current                                                                 repository or  globally))
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="2local-changes本地操作">2、Local Changes(本地操作)</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git status    查看工作区内的文件修改(List changed files in your working directory)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git diff       查看已追踪文件的修改(List changed to tracked files)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git add       添加此文件的所有修改在下次提交时(Add all current changed in file to the next                      commit)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git add .     添加本地库中的所有修改在下次提交的时(Add all current changed to the next                          commit)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git mv          修改文件名并添加到下次提交当中(Rename file and add it to next commit)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git rm          删除此文件并将此处删除添加到下次提交当中(Delete file and add its deletion                           to next commit)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git commit -a          提交工作区所有文件(Commit all local changes in tracked files)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="3commit-history提交历史">3、Commit History(提交历史)</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git log                                             显示所有的提交日志(Show all commits)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git log -p                                       这个文件的最后一次提交日志(Shwo changes over                                                                   time for a specific file)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git log --author=&lt;committer name&gt;  这个提交者最后一次的提交日志(Show changes over                                                                time for a specific committer)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git blame &lt;file&gt;                              此文件被谁修改了(Who changed what and when in file)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git stash                                           查看临时的文件变动 (Store changes temporarily)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git stash pop                                    删除上一次记录储蓄新的改动记录(Remove and apply                                                              changes)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git rm --cached &lt;file&gt;                  把此文件从过去的提交记录中删除但是保留当前本地的                                                             文件(Remvoe file from previous commits but keep it                                                           locally)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="4branches--tags分支和标签">4、Branches &amp; Tags(分支和标签)</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git branch                                 本地所有的分支列表(List all existing branches)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git checkout &lt;branch&gt;            切换分支(Switch HEAD branch)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git branch &lt;new branch&gt;        创建新分支(Creat a new branch based on your current                                                         HEAD)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git branch --track &lt;new-branch&gt;&lt;remote-branch&gt;  创建一个新的分支基于一个远程的                                                                                       分支(Creat a new  tracking branch                                                                                       based on a remote branch)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git branch -d &lt;branch&gt;                          删除一个本地分支(Delete a local branch)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git branch origin --delete &lt;branch&gt;       删除一个远程分支(Delete a remote branch)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git push &lt;remote&gt; : &lt;old name&gt;           重命名远程分支名(Rename a branch on             git push &lt;remote&gt; &lt;new name&gt;              remote)git push
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git tag &lt;tag-name&gt;                                  给当前提交打一个tag,也可以查看当前标签(Tag                                                                        the current commit)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="5update--publish更新和提交">5、Update &amp; Publish(更新和提交)</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git remote -v                         查看远程库的地址列表(List all currently configured remotes)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git remote show &lt;remote&gt;       查看这个远程库的信息(Show information about a remote)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git remote add &lt;remote&gt; &lt;url&gt; 添加新的远程库(Add new remote repository)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git remote rename &lt;old-name&gt; &lt;new-name&gt;    重命名远程库(Rename a remote)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git fetch &lt;remote&gt;       从远程库更新所有的信息到本地，但是不合并(Download all changes                                        from remote,but don't merge into HEAD)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git fetch -p &lt;remote&gt;     从远程库更新所有的信息到本地，但是不合并并清理已删除的远程分                                           支(Download all changes fromm remote,but don't merge in                                               HEAD and clean up deleted branchs from origin)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git pull &lt;remote&gt;&lt;branch&gt;   从远程库更新数据并立即合并数据(Download changes and                                                       directly merge into HEAD)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git push &lt;remote&gt;&lt;branch&gt;   将本地数据同步到远程库中(Publish local changes on a                                                           remote)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git remote add --track &lt;remote-branch&gt;&lt;remote&gt;&lt;url&gt;  追踪一个远程库(Track a                                                                                                        remote repository)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git push --tags                         同步标签到远程库(Publish your tags
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git remote show &lt;remote&gt;      显示远程库信息(Show information about a submodule)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="6merge--rebase分支合并和重整数据">6、Merge &amp; Rebase(分支合并和重整数据)</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git merge &lt;branch&gt;       将其他分支和并到当前分支(Merge branch into your current HEAD)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git rebase &lt;branch&gt;          将亲她分支合并到当前分支并按照提交顺序排序(Rebase your                                                   current HEAD onto branch)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git rebase --abort             终止当前合并(Abort a rebase)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git rebase --continue       解决冲突后继续当前合并和重整(Continue a rebase after                                                           resolving confilcys)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git mergetool                      使用配置的合并工具解决冲突(Resolve conflicts using your                                                     configured merge tool)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td> --><td class="rouge-code"><pre>git add &lt;resolved-file&gt;     手动解决冲突使用编辑器并标记已解决的文件
+
+git rm &lt;resolved-file&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="6undo撤销">6、Undo(撤销)</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git reset --hard HEAD                丢弃所有的本地修改(Discard all local changes in your                                                           working directory)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git checkout HEAD &lt;file&gt;           丢弃此文件的本地修改(Discard local changes in a specific                                                      file)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git revert  &lt;commit&gt;                  撤销某次的提交内容(Revert a commit by providing                                                                 a new commit with contrary changes)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git checkout &lt;commit&gt;&lt;file&gt;    撤销某次提交的某个文件的内容(Revert a specific file from                                                     a previous commit)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="7-重置头指针到过去的某个提交上版本回退reset-your-head-pointer-to-a-previous-commit">7、 重置头指针到过去的某个提交上,版本回退(Reset your HEAD pointer to a previous commit)</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git reset --hard  &lt;commit&gt;     回退到某个版本(Discarding local changes)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git reset &lt;commit&gt;                   回退到某个版本并保存未追踪的改动
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre>git reset --keep &lt;commit&gt;       回退到某个版本并保存未提交的改动
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="8-把某一个-commit-拷贝到另外一个分子">8、 把某一个 commit 拷贝到另外一个分子</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><!-- <td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td> --><td class="rouge-code"><pre> git cherry-pick 58aa481
+</pre></td></tr></tbody></table></code></pre></div></div>
+:ET

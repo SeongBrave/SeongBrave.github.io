@@ -1,0 +1,370 @@
+I"��<p>分页查询存储过程</p>
+
+<p>###分页查询存储过程</p>
+
+<blockquote>
+  <p>联合主键的：</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">CREATE</span>  <span class="no">PROC</span> <span class="no">P_public_ViewPage</span>
+  <span class="sr">/**/</span><span class="err">/*
+        </span><span class="sr">no</span><span class="n">_mIss</span><span class="err"> 通用分页存储过程 </span><span class="mf">2007.3</span><span class="o">.</span><span class="mi">1</span><span class="err">  </span><span class="no">QQ</span><span class="p">:</span><span class="mi">34813284</span>
+        <span class="err">适用于联合主键</span><span class="o">/</span><span class="err">单主键</span><span class="o">/</span><span class="err">存在能确定唯一行列</span><span class="o">/</span><span class="err">存在能确定唯一行的多列 </span><span class="p">(</span><span class="err">用英文</span><span class="p">,</span><span class="err">隔开</span><span class="p">)</span>
+        <span class="err">调用：</span>
+        <span class="err"> 第一页查询时返回总记录和总页数及第一页记录：</span>
+    <span class="no">EXECUTE</span><span class="err"> </span><span class="no">P_public_ViewPage_per</span><span class="err"> </span><span class="s1">'TableName'</span><span class="p">,</span><span class="s1">'col1,col2,col3,col4'</span><span class="p">,</span><span class="s1">'pk1,pk2,pk3'</span><span class="p">,</span>
+                <span class="s1">'col5&gt;0 and col7&lt;9'</span><span class="p">,</span><span class="s1">'pk1 asc,pk2 asc,pk3 asc'</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span>
+                <span class="vi">@TotalCount</span><span class="err"> </span><span class="no">OUTPUT</span><span class="p">,</span><span class="vi">@TotalPageCount</span><span class="err"> </span><span class="no">OUTPUT</span>
+        <span class="err">其它页调用，比如第</span><span class="mi">89</span><span class="err">页</span><span class="p">(</span><span class="err">假设第一页查询时返回总记录为</span><span class="mi">2000000</span><span class="p">)</span><span class="err">：</span>
+        <span class="no">EXECUTE</span><span class="err"> </span><span class="no">P_public_ViewPage_per</span><span class="err"> </span><span class="s1">'TableName'</span><span class="p">,</span><span class="s1">'col1,col2,col3,col4'</span><span class="p">,</span><span class="s1">'pk1,pk2,pk3'</span><span class="p">,</span>
+            <span class="s1">'col5&gt;0 and col7&lt;9'</span><span class="p">,</span><span class="s1">'pk1 asc,pk2 asc,pk3 asc'</span><span class="p">,</span><span class="mi">2000000</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">89</span><span class="p">,</span>
+            <span class="err"> </span><span class="vi">@TotalCount</span><span class="err"> </span><span class="no">OUTPUT</span><span class="p">,</span><span class="vi">@TotalPageCount</span><span class="err"> </span><span class="no">OUTPUT</span>
+<span class="err">    </span><span class="o">*</span><span class="sr">/
+
+    @TableName VARCHAR(200),        --表名
+    @FieldList VARCHAR(2000),       --显示列名
+    @PrimaryKey VARCHAR(100),       --单一主键或唯一值键或联合主键列表(用英文,隔开)或能确定唯一行的多列列表(用英文,隔开)
+    @Where VARCHAR(1000),           --查询条件 不含'where'字符
+    @Order VARCHAR(1000),           --排序 不含'order by'字符,用英文,隔开  
+    @RecorderCount INT,             --记录总数 0:会返回总记录
+    @PageSize INT,                  --每页输出的记录数
+    @PageIndex INT,                 --当前页数
+    @TotalCount INT OUTPUT,         --返回记录总数
+    @TotalPageCount INT OUTPUT      --返回总页数
+AS
+
+    SET NOCOUNT ON
+    SET @FieldList = REPLACE(@FieldList,' ','')
+    IF @FieldList = '*' 
+        BEGIN SET @FieldList = 'A.*'END
+    ELSE
+        BEGIN
+            SET @FieldList = 'A.' + REPLACE(@FieldList,',',',A.')
+        END
+    
+    WHILE CHARINDEX(', ',@Order)&gt;0
+    BEGIN
+        SET @Order = REPLACE(@Order,', ',',')
+    END
+
+    IF ISNULL(@TableName,'') = '' OR ISNULL(@PrimaryKey,'') = ''        
+        OR @RecorderCount &lt; 0 OR @PageSize &lt; 0 OR @PageIndex &lt; 0
+    BEGIN        
+        RETURN
+    END
+ 
+    DECLARE @new_where1 VARCHAR(1000)
+    DECLARE @new_where2 VARCHAR(1000)
+    DECLARE @new_where3 VARCHAR(1000)
+    DECLARE @new_where4 VARCHAR(1000)
+    DECLARE @new_order1 VARCHAR(1000)
+    DECLARE @new_order2 VARCHAR(1000)
+    DECLARE @Fields VARCHAR(1000)
+    DECLARE @Sql VARCHAR(8000)
+    DECLARE @SqlCount NVARCHAR(4000)
+
+    SET @Fields = @PrimaryKey + ','
+    SET @new_where2 = ''
+    SET @new_where4 = ''
+
+
+    IF ISNULL(@where,'') = ''
+        BEGIN               
+        SET @new_where1 = ' '
+            SET @new_where3 = ' WHERE '
+        END
+    ELSE
+        BEGIN
+            SET @new_where1 = ' WHERE ' + @where + ' '
+            SET @new_where3 = ' WHERE 1=1 ' 
+                + REPLACE(' AND ' + @where,' AND ',' AND A.')+ ' AND '
+        END
+    
+    WHILE CHARINDEX(',',@Fields)&gt;0
+    BEGIN
+        SET @new_where2 = @new_where2 
+            + 'A.' + LTRIM(LEFT(@Fields,CHARINDEX(',',@Fields)-1))
+            + ' = B.' + LTRIM(LEFT(@Fields,CHARINDEX(',',@Fields)-1)) + ' AND '
+        SET @new_where4 = @new_where4 
+            + 'B.' + LTRIM(LEFT(@Fields,CHARINDEX(',',@Fields)-1)) + ' IS NULL AND '
+        SET @Fields = SUBSTRING(@Fields,CHARINDEX(',',@Fields)+1,LEN(@Fields))
+    END
+    SET @new_where2 = LEFT(@new_where2,LEN(@new_where2)-4)
+    SET @new_where4 = LEFT(@new_where4,LEN(@new_where4)-4)
+
+    IF ISNULL(@order,'') = '' 
+        BEGIN
+            SET @new_order1 = ''
+            SET @new_order2 = ''
+        END
+    ELSE
+        BEGIN
+            SET @new_order1 = ' ORDER BY ' + @Order
+            SET @new_order2 = ' ORDER BY ' 
+                + RIGHT(REPLACE(',' + @Order,',',', A.' ),
+                            LEN(REPLACE(',' + @Order,',',', A.' ))-1)
+        END
+
+    SET @SqlCount = 'SELECT @TotalCount=COUNT(*),@TotalPageCount=CEILING((COUNT(*)+0.0)/</span><span class="err">'
+                    + CAST(@Pag</span><span class="sr">e</span><span class="no">Size</span><span class="err"> </span><span class="no">AS</span><span class="err"> </span><span class="no">VARCHAR</span><span class="p">)</span><span class="o">+</span><span class="s1">') FROM '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span>
+                    <span class="o">+</span><span class="err"> </span><span class="s1">' A '</span><span class="err"> </span><span class="o">+</span><span class="err">  </span><span class="vi">@new_where1</span>
+<span class="err">    </span>
+    <span class="no">IF</span><span class="err"> </span><span class="vi">@RecorderCount</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="mi">0</span>
+        <span class="k">BEGIN</span>
+            <span class="no">EXEC</span><span class="err"> </span><span class="no">SP_EXECUTESQL</span><span class="err"> </span><span class="vi">@SqlCount</span><span class="p">,</span><span class="no">N</span><span class="s1">'@TotalCount INT OUTPUT,@TotalPageCount INT OUTPUT'</span><span class="p">,</span>
+<span class="err">                               </span><span class="vi">@TotalCount</span><span class="err"> </span><span class="no">OUTPUT</span><span class="p">,</span><span class="vi">@TotalPageCount</span><span class="err"> </span><span class="no">OUTPUT</span>
+        <span class="k">END</span>
+<span class="err">    </span><span class="no">ELSE</span>
+        <span class="k">BEGIN</span>
+            <span class="err"> </span><span class="no">SELECT</span><span class="err"> </span><span class="vi">@TotalCount</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="vi">@RecorderCount</span><span class="err">            </span>
+        <span class="k">END</span>
+
+    <span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">&gt;</span><span class="err"> </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span>
+        <span class="k">BEGIN</span>
+            <span class="no">SET</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span>
+        <span class="k">END</span>
+    <span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="mi">1</span>
+        <span class="k">BEGIN</span>
+            <span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span>
+<span class="err">                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' A'</span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span>
+        <span class="k">END</span>
+    <span class="no">ELSE</span>
+        <span class="k">BEGIN</span>
+            <span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span>
+                        <span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' A LEFT JOIN (SELECT TOP '</span><span class="err"> </span>
+                        <span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="o">*</span><span class="p">(</span><span class="vi">@PageIndex</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="err"> </span>
+                        <span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span>
+                        <span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' )B ON '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where2</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where3</span><span class="err"> </span>
+                        <span class="o">+</span><span class="err"> </span><span class="vi">@new_where4</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order2</span>
+        <span class="k">END</span>
+
+<span class="no">EXEC</span><span class="p">(</span><span class="vi">@Sql</span><span class="p">)</span>
+<span class="no">GO</span> </code></pre></figure>
+
+<blockquote>
+  <p>单主键：</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">CREATE</span><span class="err"> </span><span class="no">PROC</span><span class="err"> </span><span class="no">P_viewPage</span>
+
+<span class="err">    </span><span class="o">/**</span><span class="sr">//</span><span class="err">*
+        </span><span class="sr">n</span><span class="n">zperfect</span><span class="err"> </span><span class="p">[</span><span class="n">no_mIss</span><span class="p">]</span><span class="err"> 高效通用分页存储过程</span><span class="p">(</span><span class="err">双向检索</span><span class="p">)</span><span class="err"> </span><span class="mf">2007.5</span><span class="o">.</span><span class="mi">7</span><span class="err">  </span><span class="no">QQ</span><span class="p">:</span><span class="mi">34813284</span>
+<span class="err">        敬告：适用于单一主键或存在唯一值列的表或视图</span>
+<span class="err">        </span><span class="n">ps</span><span class="ss">:Sql</span><span class="err">语句为</span><span class="mi">8000</span><span class="err">字节</span><span class="p">,</span><span class="err">调用时请注意传入参数及</span><span class="n">sql</span><span class="err">总长度不要超过指定范围</span>
+<span class="err">           </span>
+<span class="err">    </span><span class="o">*</span><span class="sr">/
+
+    @TableName VARCHAR(200),     --表名
+    @FieldList VARCHAR(2000),    --显示列名，如果是全部字段则为*
+    @PrimaryKey VARCHAR(100),    --单一主键或唯一值键
+    @Where VARCHAR(2000),        --查询条件 不含'where'字符，如id&gt;10 and len(userid)&gt;9
+    @Order VARCHAR(1000),        --排序 不含'order by'字符，如id asc,userid desc，必须指定asc或desc                                 
+                                 --注意当@SortType=3时生效，记住一定要在最后加上主键，否则会让你比较郁闷
+    @SortType INT,               --排序规则 1:正序asc 2:倒序desc 3:多列排序方法
+    @RecorderCount INT,          --记录总数 0:会返回总记录
+    @PageSize INT,               --每页输出的记录数
+    @PageIndex INT,              --当前页数
+    @TotalCount INT OUTPUT,      --记返回总记录
+    @TotalPageCount INT OUTPUT   --返回总页数
+AS
+    SET NOCOUNT ON
+
+    IF ISNULL(@TotalCount,'') = '' SET @TotalCount = 0
+    SET @Order = RTRIM(LTRIM(@Order))
+    SET @PrimaryKey = RTRIM(LTRIM(@PrimaryKey))
+    SET @FieldList = REPLACE(RTRIM(LTRIM(@FieldList)),' ','')
+
+    WHILE CHARINDEX(', ',@Order) &gt; 0 OR CHARINDEX(' ,',@Order) &gt; 0
+    BEGIN
+        SET @Order = REPLACE(@Order,', ',',')
+        SET @Order = REPLACE(@Order,' ,',',')    
+    END
+
+    IF ISNULL(@TableName,'') = '' OR ISNULL(@FieldList,'') = '' 
+        OR ISNULL(@PrimaryKey,'') = ''
+        OR @SortType &lt; 1 OR @SortType &gt;3
+        OR @RecorderCount  &lt; 0 OR @PageSize &lt; 0 OR @PageIndex &lt; 0        
+    BEGIN 
+        PRINT('ERR_00')       
+        RETURN
+    END    
+
+    IF @SortType = 3
+    BEGIN
+        IF (UPPER(RIGHT(@Order,4))!=' ASC' AND UPPER(RIGHT(@Order,5))!=' DESC')
+        BEGIN PRINT('ERR_02') RETURN END
+    END
+
+    DECLARE @new_where1 VARCHAR(1000)
+    DECLARE @new_where2 VARCHAR(1000)
+    DECLARE @new_order1 VARCHAR(1000)   
+    DECLARE @new_order2 VARCHAR(1000)
+    DECLARE @new_order3 VARCHAR(1000)
+    DECLARE @Sql VARCHAR(8000)
+    DECLARE @SqlCount NVARCHAR(4000)
+
+    IF ISNULL(@where,'') = ''
+        BEGIN
+            SET @new_where1 = ' '
+            SET @new_where2 = ' WHERE  '
+        END
+    ELSE
+        BEGIN
+            SET @new_where1 = ' WHERE ' + @where 
+            SET @new_where2 = ' WHERE ' + @where + ' AND '
+        END
+
+    IF ISNULL(@order,'') = '' OR @SortType = 1  OR @SortType = 2 
+        BEGIN
+            IF @SortType = 1 
+            BEGIN 
+                SET @new_order1 = ' ORDER BY ' + @PrimaryKey + ' ASC'
+                SET @new_order2 = ' ORDER BY ' + @PrimaryKey + ' DESC'
+            END
+            IF @SortType = 2 
+            BEGIN 
+                SET @new_order1 = ' ORDER BY ' + @PrimaryKey + ' DESC'
+                SET @new_order2 = ' ORDER BY ' + @PrimaryKey + ' ASC'
+            END
+        END
+    ELSE
+        BEGIN
+            SET @new_order1 = ' ORDER BY ' + @Order
+        END
+
+    IF @SortType = 3 AND  CHARINDEX(','+@PrimaryKey+' ',','+@Order)&gt;0
+        BEGIN
+            SET @new_order1 = ' ORDER BY ' + @Order
+            SET @new_order2 = @Order + ','            
+            SET @new_order2 = REPLACE(REPLACE(@new_order2,'ASC,','{ASC},'),'DESC,','{DESC},')            
+            SET @new_order2 = REPLACE(REPLACE(@new_order2,'{ASC},','DESC,'),'{DESC},','ASC,')
+            SET @new_order2 = ' ORDER BY ' + SUBSTRING(@new_order2,1,LEN(@new_order2)-1)            
+            IF @FieldList &lt;&gt; '*'
+                BEGIN            
+                    SET @new_order3 = REPLACE(REPLACE(@Order + ',','ASC,',','),'DESC,',',')                              
+                    SET @FieldList = ',' + @FieldList                    
+                    WHILE CHARINDEX(',',@new_order3)&gt;0
+                    BEGIN
+                        IF CHARINDEX(SUBSTRING(','+@new_order3,1,CHARINDEX(',',@new_order3)),','+@FieldList+',')&gt;0
+                        BEGIN 
+                        SET @FieldList = 
+                            @FieldList + ',' + SUBSTRING(@new_order3,1,CHARINDEX(',',@new_order3))                        
+                        END
+                        SET @new_order3 = 
+                        SUBSTRING(@new_order3,CHARINDEX(',',@new_order3)+1,LEN(@new_order3))
+                    END
+                    SET @FieldList = SUBSTRING(@FieldList,2,LEN(@FieldList))                     
+                END            
+        END
+
+    SET @SqlCount = 'SELECT @TotalCount=COUNT(*),@TotalPageCount=CEILING((COUNT(*)+0.0)/</span><span class="err">'
+                    + CAST(@Pag</span><span class="sr">e</span><span class="no">Size</span><span class="err"> </span><span class="no">AS</span><span class="err"> </span><span class="no">VARCHAR</span><span class="p">)</span><span class="o">+</span><span class="s1">') FROM '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span>
+<span class="err">    </span>
+<span class="err">    </span><span class="no">IF</span><span class="err"> </span><span class="vi">@RecorderCount</span><span class="err">  </span><span class="o">=</span><span class="err"> </span><span class="mi">0</span>
+<span class="err">        </span><span class="k">BEGIN</span>
+<span class="err">             </span><span class="no">EXEC</span><span class="err"> </span><span class="no">SP_EXECUTESQL</span><span class="err"> </span><span class="vi">@SqlCount</span><span class="p">,</span><span class="no">N</span><span class="s1">'@TotalCount INT OUTPUT,@TotalPageCount INT OUTPUT'</span><span class="p">,</span>
+<span class="err">                               </span><span class="vi">@TotalCount</span><span class="err"> </span><span class="no">OUTPUT</span><span class="p">,</span><span class="vi">@TotalPageCount</span><span class="err"> </span><span class="no">OUTPUT</span>
+<span class="err">        </span><span class="k">END</span>
+<span class="err">    </span><span class="no">ELSE</span>
+<span class="err">        </span><span class="k">BEGIN</span>
+<span class="err">             </span><span class="no">SELECT</span><span class="err"> </span><span class="vi">@TotalCount</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="vi">@RecorderCount</span><span class="err">            </span>
+<span class="err">        </span><span class="k">END</span>
+
+<span class="err">    </span><span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">&gt;</span><span class="err"> </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span>
+<span class="err">        </span><span class="k">BEGIN</span>
+<span class="err">            </span><span class="no">SET</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">=</span><span class="err">  </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span>
+<span class="err">        </span><span class="k">END</span>
+
+<span class="err">    </span><span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="mi">1</span><span class="err"> </span><span class="no">OR</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">&gt;=</span><span class="err"> </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span>
+<span class="err">        </span><span class="k">BEGIN</span>
+<span class="err">            </span><span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="mi">1</span><span class="err"> </span><span class="o">--</span><span class="err">返回第一页数据</span>
+<span class="err">                </span><span class="k">BEGIN</span>
+<span class="err">                    </span><span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span>
+<span class="err">                               </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span>
+<span class="err">                </span><span class="k">END</span>
+<span class="err">            </span><span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">&gt;=</span><span class="err"> </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err">  </span><span class="o">--</span><span class="err">返回最后一页数据</span>
+<span class="err">                </span><span class="k">BEGIN</span>
+<span class="err">                    </span><span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM ('</span><span class="err"> </span>
+<span class="err">                               </span><span class="o">+</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="no">ABS</span><span class="p">(</span><span class="vi">@PageSize</span><span class="o">*</span><span class="vi">@PageIndex</span><span class="o">-</span><span class="vi">@TotalCount</span><span class="o">-</span><span class="vi">@PageSize</span><span class="p">))</span><span class="err"> </span>
+<span class="err">                               </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span>
+<span class="err">                               </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order2</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' ) AS TMP '</span>
+<span class="err">                               </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span><span class="err">                    </span>
+<span class="err">                </span><span class="k">END</span><span class="err">        </span>
+<span class="err">        </span><span class="k">END</span><span class="err">    </span>
+<span class="err">    </span><span class="no">ELSE</span>
+<span class="err">        </span><span class="k">BEGIN</span>
+<span class="err">            </span><span class="no">IF</span><span class="err"> </span><span class="vi">@SortType</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="mi">1</span><span class="err">  </span><span class="o">--</span><span class="err">仅主键正序排序</span>
+<span class="err">                </span><span class="k">BEGIN</span>
+<span class="err">                    </span><span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">&lt;=</span><span class="err"> </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="err">  </span><span class="o">--</span><span class="err">正向检索</span>
+<span class="err">                        </span><span class="k">BEGIN</span>
+<span class="err">                            </span><span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where2</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' &gt; '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">'(SELECT MAX('</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">') FROM (SELECT TOP '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="o">*</span><span class="p">(</span><span class="vi">@PageIndex</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span><span class="err"> </span><span class="o">+</span><span class="s1">' ) AS TMP) '</span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span>
+<span class="err">                        </span><span class="k">END</span>
+<span class="err">                    </span><span class="no">ELSE</span><span class="err">  </span><span class="o">--</span><span class="err">反向检索</span>
+<span class="err">                        </span><span class="k">BEGIN</span>
+<span class="err">                            </span><span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM ('</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where2</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' &lt; '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">'(SELECT MIN('</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">') FROM (SELECT TOP '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@TotalCount</span><span class="o">-</span><span class="vi">@PageSize</span><span class="o">*</span><span class="vi">@PageIndex</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order2</span><span class="err"> </span><span class="o">+</span><span class="s1">' ) AS TMP) '</span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order2</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' ) AS TMP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span>
+<span class="err">                        </span><span class="k">END</span>
+<span class="err">                </span><span class="k">END</span>
+<span class="err">            </span><span class="no">IF</span><span class="err"> </span><span class="vi">@SortType</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="mi">2</span><span class="err">  </span><span class="o">--</span><span class="err">仅主键反序排序</span>
+<span class="err">                </span><span class="k">BEGIN</span>
+<span class="err">                    </span><span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">&lt;=</span><span class="err"> </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="err">  </span><span class="o">--</span><span class="err">正向检索</span>
+<span class="err">                        </span><span class="k">BEGIN</span>
+<span class="err">                            </span><span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where2</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' &lt; '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">'(SELECT MIN('</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">') FROM (SELECT TOP '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="o">*</span><span class="p">(</span><span class="vi">@PageIndex</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="s1">' FROM '</span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">') AS TMP) '</span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span><span class="err">                               </span>
+<span class="err">                        </span><span class="k">END</span><span class="err"> </span>
+<span class="err">                    </span><span class="no">ELSE</span><span class="err">  </span><span class="o">--</span><span class="err">反向检索</span>
+<span class="err">                        </span><span class="k">BEGIN</span>
+<span class="err">                            </span><span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM ('</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where2</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' &gt; '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">'(SELECT MAX('</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">') FROM (SELECT TOP '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@TotalCount</span><span class="o">-</span><span class="vi">@PageSize</span><span class="o">*</span><span class="vi">@PageIndex</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order2</span><span class="err"> </span><span class="o">+</span><span class="s1">' ) AS TMP) '</span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order2</span><span class="err"> </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' ) AS TMP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span>
+<span class="err">                        </span><span class="k">END</span><span class="err">  </span>
+<span class="err">                </span><span class="k">END</span><span class="err">                         </span>
+<span class="err">            </span><span class="no">IF</span><span class="err"> </span><span class="vi">@SortType</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="mi">3</span><span class="err">  </span><span class="o">--</span><span class="err">多列排序，必须包含主键，且放置最后，否则不处理</span>
+<span class="err">                </span><span class="k">BEGIN</span>
+<span class="err">                    </span><span class="no">IF</span><span class="err"> </span><span class="no">CHARINDEX</span><span class="p">(</span><span class="s1">','</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@PrimaryKey</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="p">,</span><span class="s1">','</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@Order</span><span class="p">)</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="mi">0</span><span class="err"> </span>
+<span class="err">                    </span><span class="k">BEGIN</span><span class="err"> </span><span class="no">PRINT</span><span class="p">(</span><span class="s1">'ERR_02'</span><span class="p">)</span><span class="err"> </span><span class="no">RETURN</span><span class="err"> </span><span class="k">END</span>
+<span class="err">                    </span><span class="no">IF</span><span class="err"> </span><span class="vi">@PageIndex</span><span class="err"> </span><span class="o">&lt;=</span><span class="err"> </span><span class="no">CEILING</span><span class="p">((</span><span class="vi">@TotalCount</span><span class="o">+</span><span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="vi">@PageSize</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="err">  </span><span class="o">--</span><span class="err">正向检索</span>
+<span class="err">                        </span><span class="k">BEGIN</span>
+<span class="err">                            </span><span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM ( '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM ( '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="o">*</span><span class="vi">@PageIndex</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' ) AS TMP '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order2</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' ) AS TMP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span><span class="err">    </span>
+<span class="err">                        </span><span class="k">END</span>
+<span class="err">                    </span><span class="no">ELSE</span><span class="err">  </span><span class="o">--</span><span class="err">反向检索</span>
+<span class="err">                        </span><span class="k">BEGIN</span>
+<span class="err">                            </span><span class="no">SET</span><span class="err"> </span><span class="vi">@Sql</span><span class="err"> </span><span class="o">=</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM ( '</span><span class="err">  </span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">'SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM ( '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' SELECT TOP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="no">STR</span><span class="p">(</span><span class="vi">@TotalCount</span><span class="o">-</span><span class="vi">@PageSize</span><span class="o">*</span><span class="vi">@PageIndex</span><span class="o">+</span><span class="vi">@PageSize</span><span class="p">)</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@FieldList</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="s1">' FROM '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@TableName</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_where1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order2</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' ) AS TMP '</span>
+<span class="err">                                       </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="s1">' ) AS TMP '</span><span class="err"> </span><span class="o">+</span><span class="err"> </span><span class="vi">@new_order1</span>
+<span class="err">                        </span><span class="k">END</span>
+<span class="err">                </span><span class="k">END</span>
+<span class="err">        </span><span class="k">END</span>
+<span class="err">    </span><span class="no">PRINT</span><span class="p">(</span><span class="vi">@Sql</span><span class="p">)</span>
+<span class="err">    </span><span class="no">EXEC</span><span class="p">(</span><span class="vi">@Sql</span><span class="p">)</span>
+<span class="no">GO</span> </code></pre></figure>
+
+:ET
